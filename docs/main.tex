@@ -1,0 +1,38 @@
+% Filename: main.tex
+% Description:
+% Created by ngocjr7 on [17-04-2020 20:26:11]
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,total={6in, 8in}]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage[
+    hashEnumerators,
+    definitionLists,
+    footnotes,
+    inlineFootnotes,
+    smartEllipses,
+    fencedCode,
+    contentBlocks,
+    pipeTables,
+    tableCaptions,
+  hybrid
+]{markdown}
+
+
+\title{\textbf{Evolutional Algorithms}}
+\author{Ngoc Bui \\ Hanoi University of Science and Technology\\ {ngocjr7@gmail.com}}
+\date{April 2020}
+
+\begin{document}
+\maketitle
+
+\begin{markdown}
+\markdownInput{./ga.md}
+\markdownInput{./pso.md}
+\markdownInput{./de.md}
+\markdownInput{./mfea.md}
+\markdownInput{./mo-mfea.md}
+\end{markdown}
+
+\end{document}

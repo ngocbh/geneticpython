@@ -53,7 +53,7 @@ population = Population(indiv_temp, pop_size)
 selection = RouletteWheelSelection()
 crossover = UniformCrossover(pc=0.8, pe=0.5)
 mutation = FlipBitMutation(pm=0.1)
-engine = GeneticEngine(population,selection=selection,crossover=crossover,mutation=mutation)
+engine = GeneticEngine(population,selection=selection,crossover=crossover,mutation=mutation,max_iter=100)
 
 @engine.register_fitness
 def fitness(indv):
