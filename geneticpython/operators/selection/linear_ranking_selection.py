@@ -11,5 +11,5 @@ class LinearRankingSelection(Selection):
     def __init__(self, pmin, pmax):
         pass
 
-    def select(self, fitness):
+    def select(self):
         pass

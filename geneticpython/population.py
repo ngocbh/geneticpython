@@ -5,15 +5,25 @@
 """
 from __future__ import absolute_import
 
+from functools import wraps
+from typing import List, Union, Callable
+from tqdm.auto import tqdm
+
+
+from .individual import Individual
+from random import Random
 import random
 
-class Population:
+class Population():
 
-    def __init__(self, individual_temp, size=100):
+    def __init__(self, individual_temp: Individual, init_population : Callable[[], List[Individual]] = None, size=100):
         self.individual_temp = individual_temp
         self.rand = random.Random()
         self.size = size
-        self.init_population = self.init_population_randomly
+        if not init_population:
+            self.init_population = init_population
+        else:
+            self.init_population = self.init_population_randomly
         self.individuals = []
 
     def __str__(self):
@@ -50,38 +60,24 @@ class Population:
     def set_rand(self,rand):
         self.rand = rand
 
-    def set_initialization(self, callback):
+    def set_initialization(self, callback : Callable[[], List[Individual]]):
         self.init_population = callback
 
-    def init_population_randomly(self, rand=None):
-        if not rand:
-            rand = random.Random()
-
+    def init_population_randomly(self, rand : Random = Random()) -> List[Individual]:
+        ret = []
         for _ in range(self.size):
             new_indiv = self.individual_temp.clone()
             new_indiv.init(rand=rand)
-            self.individuals.append(new_indiv)
+            ret.append(new_indiv)
+        return ret
 
     def clear(self):
         self.individuals.clear()
 
     def sort(self,reversed=True):
-        self.individuals.sort(key=lambda x: x.fitness,reversed=reversed)
+        self.individuals.sort(key=lambda x: x.objective,reversed=reversed)
     
-    def all_fits(self, fitness_func):
-        fits = []
-        for indv in self.individuals:
-            indv.fitness = fitness_func(indv)
-            fits.append(indv.fitness)
-        return fits
+    def all_fits(self):
+        return [indv.objective for indv in self.individuals]
 
-    def get_best_indv(self, fitness_func):
-        best_indv = None
-        best_fit = -9223372036854775807
-        for indv in self.individuals:
-            indv.fitness = fitness_func(indv)
-            if indv.fitness > best_fit:
-                best_fit = indv.fitness
-                best_indv = indv
-        return best_indv.clone()
     

@@ -8,3 +8,4 @@ from __future__ import absolute_import
 from .selection import *
 from .mutation import *
 from .crossover import *
+from .replacement import *

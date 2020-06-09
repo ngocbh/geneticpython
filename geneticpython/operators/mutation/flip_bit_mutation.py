@@ -8,6 +8,8 @@ from __future__ import absolute_import
 from ...individual import BinaryIndividual
 from .mutation import Mutation
 import random
+
+
 class FlipBitMutation(Mutation):
     def __init__(self, pm):
         if pm <= 0.0 or pm > 1.0:
@@ -27,9 +29,5 @@ class FlipBitMutation(Mutation):
                 if no_flip:
                     continue
 
-                # if type(individual) is BinaryIndividual:
-                individual.chromosome.genes[i].value = genome.value^1
-                # else:
-                #     raise TypeError('Wrong individual type: {}'.format(type(individual)))
-        # print(individual)
+                individual.chromosome.genes[i] = genome^1
         return individual

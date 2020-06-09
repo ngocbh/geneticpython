@@ -4,8 +4,12 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage[a4paper,total={6in, 8in}]{geometry}
-\usepackage[utf8]{inputenc}
 \usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{mathtools}
+\usepackage[numbers]{natbib}
+\usepackage{minted}
+
 \usepackage[
     hashEnumerators,
     definitionLists,
@@ -16,23 +20,45 @@
     contentBlocks,
     pipeTables,
     tableCaptions,
-  hybrid
+    citations,
+    citationNbsps,
+    hybrid,
+    html, 
 ]{markdown}
 
+% \markdownSetup{
+%   renderers = {
+%     headingOne = {\section{#1}},
+%     headingTwo = {\subsection{#1}},
+%     headingThree = {\subsubsection{#1}},
+%     headingFour = {\paragraph{#1}},
+%     headingFive = {\subparagraph{#1}},
+%   },
+% }
 
-\title{\textbf{Evolutional Algorithms}}
+\def\markdownOptionUnderscores{false}
+
+\setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio}
+
+\title{\textbf{Evolutionary Algorithms Notes}}
 \author{Ngoc Bui \\ Hanoi University of Science and Technology\\ {ngocjr7@gmail.com}}
 \date{April 2020}
 
 \begin{document}
 \maketitle
-
+Evolutionary algorithms (EAs) are optimization metaheuristics that work on Darwinian principles of Natural Selection or Survival of the Fittest.
 \begin{markdown}
 \markdownInput{./ga.md}
 \markdownInput{./pso.md}
 \markdownInput{./de.md}
+\markdownInput{./nsgaii.md}
+\markdownInput{./moea-d.md}
 \markdownInput{./mfea.md}
 \markdownInput{./mo-mfea.md}
 \end{markdown}
+
+
+\bibliographystyle{plain}
+\bibliography{refs.bib}
 
 \end{document}

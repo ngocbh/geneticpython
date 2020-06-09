@@ -5,9 +5,9 @@ sys.path.append(os.path.join(WORKING_DIR, '../../../geneticpython'))
 from collections import namedtuple
 Item = namedtuple("Item", ['index', 'value', 'weight'])
 
-from geneticpython.individual import Solution, BinaryIndividual, Gene, Chromosome
-from geneticpython import Population, GeneticEngine
-from geneticpython.operators import RouletteWheelSelection, UniformCrossover, FlipBitMutation
+from geneticpython.individual import BinaryIndividual
+from geneticpython import Population, GAEngine
+from geneticpython.operators import RouletteWheelSelection, UniformCrossover, FlipBitMutation, RouletteWheelReplacement
 
 class KnapsackProblem:
     def __init__(self, n, cap, items):
@@ -15,28 +15,12 @@ class KnapsackProblem:
         self.capacity = cap
         self.items = items
 
-class KnapsackIndividual(BinaryIndividual):
-    # override
-    def decode(self):
-        """
-            convert chromosome sequence to solution
-        """
-        mask = [gene.value for gene in self.chromosome.genes]
-        return mask
-
-    # override
-    def encode(self, solution):
-        """
-            return chromosome sequence
-        """
-        pass
-
 def read_input():
     # read input
     n, k = (0,0)
     items = []
 
-    with open(os.path.join(WORKING_DIR,'data/ks_200_0'),mode='r') as f:
+    with open(os.path.join(WORKING_DIR,'data/ks_100_0'), mode='r') as f:
         n, k = list(map(int,f.readline().split()))
         for i in range(n):
             line = f.readline()
@@ -46,19 +30,26 @@ def read_input():
 
 n, k, items = read_input()
 prob = KnapsackProblem(n,k,items)
-seed = 24
-pop_size = 100
-indiv_temp = KnapsackIndividual(n)
+seed = 26
+pop_size = 1000
+indiv_temp = BinaryIndividual(n)
 population = Population(indiv_temp, pop_size)
 selection = RouletteWheelSelection()
 crossover = UniformCrossover(pc=0.8, pe=0.5)
 mutation = FlipBitMutation(pm=0.1)
-engine = GeneticEngine(population,selection=selection,crossover=crossover,mutation=mutation,max_iter=100)
+replacement = RouletteWheelReplacement()
 
-@engine.register_fitness
+engine = GAEngine(population,selection=selection,
+                        crossover=crossover,
+                        mutation=mutation, 
+                        replacement=replacement, 
+                        max_iter=1000)
+
+@engine.register_objective
+@engine.maximize
 def fitness(indv):
     global prob
-    solution = indv.decode()
+    solution = indv.chromosome
     svalue = 0
     sweight = 0
     for i in range(prob.n):
@@ -67,13 +58,13 @@ def fitness(indv):
             sweight += prob.items[i].weight
     fitness = svalue 
     if sweight > prob.capacity:
-        fitness += (prob.capacity - sweight)*10
+        fitness += (prob.capacity - sweight)*100000000
         # fitness = 0
     return fitness
 
-engine.create_seed(seed)
+# engine.create_seed(seed)
 engine.run()
-ans = engine.population.get_best_indv(engine.fitness)
+ans = engine.get_best_indv()
 print(ans)
 # print(engine.population)
 
