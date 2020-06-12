@@ -9,26 +9,27 @@ from functools import wraps
 from typing import List, Union, Callable
 from tqdm.auto import tqdm
 
-from .individual import Individual
-from .population import Population
-from .operators import Selection, Crossover, Mutation, Replacement
+from ..individual import Individual
+from ..population import Population
+from ..operators import Selection, Crossover, Mutation, Replacement
 
 import random
 import math
+import copy
 
 
 class GAEngine:
     rand = None
 
-    def __init__(self, population: Population, 
+    def __init__(self, population: Population,
+            objective : Callable[[Individual], Union[float,int]] = None, 
             selection : Selection = None, 
+            selection_size : int = None,
             crossover : Crossover = None, 
             mutation : Mutation = None, 
             replacement : Replacement = None, 
-            objective : Callable[[Individual], Union[float,int]] = None,
-            selection_size : int = None,
-            random_state : int = None, 
-            max_iter=100):
+            max_iter : int = 100,
+            random_state : int = None):
             
         self.population = population
         self.MAX_ITER = max_iter 
@@ -40,6 +41,8 @@ class GAEngine:
 
         if not selection_size:
             self.selection_size = self.population.size
+        else:
+            self.selection_size = selection_size
 
         if random_state:
             self.rand = random.Random(random_state)
@@ -67,9 +70,9 @@ class GAEngine:
             childs_temp = self.crossover.cross(father=mating_population[i], mother=mating_population[i+1], rand=self.rand)
             childs.extend(childs_temp)
 
-        for child in childs:
-            child = self.mutation.mutate(child, rand=self.rand)
-        
+        for i in range(len(childs)):
+            childs[i] = self.mutation.mutate(childs[i], rand=self.rand)
+
         return childs
 
     def evaluate(self, population: List[Individual]) -> List[Individual]:
@@ -96,10 +99,11 @@ class GAEngine:
             offspring_population = self.reproduction(mating_population)
             offspring_population = self.evaluate(offspring_population)
 
+            new_population = self.population.individuals + offspring_population
+            
             self.population.individuals = self.replacement.replace(
                                             self.population.size,
-                                            self.population.individuals, 
-                                            offspring_population,
+                                            new_population,
                                             rand=self.rand)
 
             best_indv = self.get_best_indv()

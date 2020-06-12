@@ -7,3 +7,4 @@ from __future__ import absolute_import
 
 from .mutation import *
 from .flip_bit_mutation import *
+from .polynomial_mutation import *

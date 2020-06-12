@@ -8,9 +8,12 @@ from __future__ import absolute_import
 from .solution import Solution
 from .chromosome import Chromosome, IntChromosome
 
+from typing import Union
+
 from copy import deepcopy
 from random import Random
 
+import numpy as np
 import random
 import inspect
 
@@ -36,10 +39,16 @@ class Individual:
         self.objectives = None
 
     def __str__(self):
-        return str(self.chromosome) + ' -> ' + str(self.objective)
+        if self.objective:
+            return str(self.chromosome) + ' -> ' + str(self.objective)
+        else:
+            return str(self.chromosome) + ' -> ' + str(self.objectives)
 
     def __repr__(self):
-        return str(self.chromosome)  + '->' + str(self.objective)
+        if self.objective:
+            return str(self.chromosome) + ' -> ' + str(self.objective)
+        else:
+            return str(self.chromosome) + ' -> ' + str(self.objectives)
 
     def create_seed(self, seed):
         self.rand = random.Random(seed)
@@ -64,6 +73,9 @@ class Individual:
             # initialize randomly
             self.chromosome.init_genes(rand = rand)
     
+    def update_genes(self, genes: Union[np.ndarray, tuple, list]):
+        self.chromosome.init_genes(genes=genes)
+
     def is_valid(self):
         return self.chromosome.is_valid() and (not solution or self.solution.is_valid())
 

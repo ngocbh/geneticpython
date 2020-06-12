@@ -11,16 +11,16 @@ from ...individual import Individual
 from typing import List, Union
 from bisect import bisect_right
 from itertools import accumulate
-from random import random
+import random
 from random import Random
 
 class RouletteWheelSelection(Selection):
     def __init__(self):
         pass
 
-    def select(self, slt_size: int, 
+    def select(self, size: int, 
             population: List[Individual], 
-            rand : [None, Random] = Random(), 
+            rand : Random = Random(), 
             is_unique = False) -> List[Individual]:
 
         fits = [float(indv.objective) for indv in population]
@@ -33,10 +33,14 @@ class RouletteWheelSelection(Selection):
         
         selected_indvs = []
 
-        for _ in range(slt_size):
+        for _ in range(size):
             idx = bisect_right(wheel, rand.random())
-            while is_unique and not selected[idx]:
+            while is_unique and not selected[idx] and idx > -len(selected):
                 idx -= 1
+                
+            if idx == -len(selected):
+                idx = rand.randint(0, len(selected)-1)
+
             selected_indvs.append(population[idx])
             selected[idx] = False
 

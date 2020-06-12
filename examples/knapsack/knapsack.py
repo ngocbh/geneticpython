@@ -32,14 +32,15 @@ n, k, items = read_input()
 prob = KnapsackProblem(n,k,items)
 seed = 26
 pop_size = 1000
-indiv_temp = BinaryIndividual(n)
-population = Population(indiv_temp, pop_size)
+indv_temp = BinaryIndividual(n)
+population = Population(indv_temp, pop_size)
 selection = RouletteWheelSelection()
 crossover = UniformCrossover(pc=0.8, pe=0.5)
 mutation = FlipBitMutation(pm=0.1)
 replacement = RouletteWheelReplacement()
 
 engine = GAEngine(population,selection=selection,
+                        selection_size=100,
                         crossover=crossover,
                         mutation=mutation, 
                         replacement=replacement, 

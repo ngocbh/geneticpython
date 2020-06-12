@@ -7,27 +7,32 @@ from __future__ import absolute_import
 
 from ...individual import BinaryIndividual
 from .mutation import Mutation
+from random import Random
 import random
 
 
 class FlipBitMutation(Mutation):
-    def __init__(self, pm):
+    def __init__(self, pm : float, pe : float = None):
         if pm <= 0.0 or pm > 1.0:
             raise ValueError('Invalid mutation probability')
-
         self.pm = pm
 
-    def mutate(self, individual, rand):
-        if not rand:
-            rand = random.Random()
+        if pe is None:
+            pe = pm
+            
+        if pe <= 0.0 or pe > 1.0:
+            raise ValueError('Invalid mutation probability')
+        self.pe = pe
+
+    def mutate(self, individual: BinaryIndividual, rand : Random = Random()):
         do_mutation = True if rand.random() <= self.pm else False
 
-        # print(individual)
-        if do_mutation:
-            for i, genome in enumerate(individual.chromosome.genes):
-                no_flip = True if rand.random() > self.pm else False
-                if no_flip:
-                    continue
+        ret_individual = individual.clone()
 
-                individual.chromosome.genes[i] = genome^1
-        return individual
+        if do_mutation:
+            for i, genome in enumerate(ret_individual.chromosome.genes):
+                flip = True if rand.random() <= self.pe else False
+                if flip:
+                    ret_individual.chromosome.genes[i] = genome^1
+
+        return ret_individual

@@ -5,19 +5,17 @@
 """
 from __future__ import absolute_import
 
-import numpy as np
+from typing import List, Union, Callable, Dict, Tuple
 
+import numpy as np
 import random
+import copy
 
 class Chromosome():
-    def __init__(self, length: int, domain: [list, tuple]):
-        if not isinstance(domain,(list,tuple)) and len(domain) == 2:
-            raise Exception('domain has to be instance of list or tuple \
-                and contains exactly 2 numbers')
-
+    def __init__(self, length: int, domains: Union[List, Tuple], dtype: str = 'float32'):
+        self.lower_bound, self.upper_bound = Chromosome._formated_domains(length, domains)
         self.length = length
-        self.max_value, self.min_value = domain
-        self.genes = np.empty(length)
+        self.genes = np.empty(length, dtype=dtype)
     
     def __str__(self):
         return str(self.genes)
@@ -53,12 +51,26 @@ class Chromosome():
     def prefix(self, i):
         return self.genes[:i]
 
+    @staticmethod
+    def _formated_domains(length, domains):
+        if isinstance(domains,(list,tuple)) and len(domains) == 2 and \
+                all(isinstance(value, (float, int)) for value in domains):
+            return np.array([domains[0] for _ in range(length)]), np.array([domains[1] for _ in range(length)])
+        elif isinstance(domains, (list, tuple)) and len(domains) == length and\
+                all(isinstance(domain, (list, tuple)) for domain in domains) and\
+                all((len(domain) == 2) for domain in domains) and \
+                all(isinstance(value, (float, int)) for domain in domains for value in domain) and\
+                all((domain[0] < domain[1]) for domain in domains):
+            return np.array([domain[0] for domain in domains]), np.array([domain[1] for domain in domains])
+        else:
+            raise ValueError('There are two types of accepted domains\n\
+                (min_value, max_value): this domain will be applied for all variable\n\
+                [(min_value_1, max_value_1),... (min_value_length, max_value_length)]: \n\
+                each will be applied for a variable respectively')
+
     @property
     def is_valid(self):
-        for gene in self.genes:
-            if not gene.is_valid:
-                return False
-        return True
+        pass
 
     def init_genes(self, genes=None, rand=None):
         raise NotImplementedError

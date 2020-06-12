@@ -8,3 +8,4 @@ from __future__ import absolute_import
 from .selection import Selection
 from .roulette_wheel_selection import RouletteWheelSelection
 from .linear_ranking_selection import LinearRankingSelection
+from .tournament_selection import TournamentSelection

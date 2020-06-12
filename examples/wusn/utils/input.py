@@ -9,17 +9,20 @@ import math
 import os
 import pickle
 
-
-
-
 class WusnConstants:
     # Unit: J
     e_elec = 50 * 1e-9
     e_fs = 10 * 1e-12
     e_mp = 0.0013 * 1e-12
+    e_da = 5 * 1e-12
 
     # Num of bits
     k_bit = 4000
+
+    # hop constraint
+    hop = 6
+
+    E_da = e_da * k_bit
 
 
 class WusnInput:

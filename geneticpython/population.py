@@ -16,11 +16,11 @@ import random
 
 class Population():
 
-    def __init__(self, individual_temp: Individual, init_population : Callable[[], List[Individual]] = None, size=100):
+    def __init__(self, individual_temp: Individual, size=100, init_population : Callable[[], List[Individual]] = None):
         self.individual_temp = individual_temp
         self.rand = random.Random()
         self.size = size
-        if not init_population:
+        if init_population:
             self.init_population = init_population
         else:
             self.init_population = self.init_population_randomly

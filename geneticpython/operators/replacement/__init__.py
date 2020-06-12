@@ -7,3 +7,4 @@ from __future__ import absolute_import
 
 from .replacement import Replacement
 from .roulette_wheel_replacement import RouletteWheelReplacement
+from .rank_replacement import RankReplacement

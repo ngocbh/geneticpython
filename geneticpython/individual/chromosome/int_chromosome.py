@@ -12,27 +12,25 @@ import numpy as np
 import random
 
 class IntChromosome(Chromosome):
-    def __init__(self, length: int, domain: [list, tuple]):
-        if not isinstance(domain,(list,tuple)) and len(domain) == 2:
-            raise Exception('domain has to be instance of list or tuple \
-                and contains exactly 2 numbers')
+    def __init__(self, length: int, domains: [list, tuple]):
+        super(IntChromosome, self).__init__(length, domains, 'int32')
 
-        self.length = length
-        self.min_value, self.max_value = domain
-        self.genes = np.zeros(length, dtype='int32')
     @property
     def is_valid(self):
         pass
 
     def init_genes(self, genes=None, rand=random.Random()):
-        if genes:
-            if not isinstance(genes,(tuple,list)) or len(genes) != self.length:
+        if genes != None:
+            if (isinstance(genes,(tuple,list)) and len(genes) != self.length):
+                self.genes = np.array(genes)
+            elif isinstance(genes, np.ndarray) and genes.ndim == 1 and genes.shape[0] == self.length:
+                self.genes = genes
+            else:
                 raise Exception("genes has to be an instance of tuple or list and has the same length as chromosome")
-
-            self.genes = np.array(genes)
-        else:                    
-            random_func = lambda x: rand.randint(self.min_value, self.max_value)
-            self.genes = np.vectorize(random_func)(self.genes)
+        else:   
+            self.genes = np.array([
+                    rand.randint(int(self.lower_bound[i]), int(self.upper_bound[i])) for i in range(self.length)
+                ])
         
 
         

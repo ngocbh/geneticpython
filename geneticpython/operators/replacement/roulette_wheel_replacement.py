@@ -12,19 +12,23 @@ from ...individual import Individual
 from ...operators import RouletteWheelSelection
 
 from random import Random
+import math
 
 class RouletteWheelReplacement(Replacement):
+    __EPS = 1e-14
 
     def replace(self, size : int, population: List[Individual], 
-            offspring_population: List[Individual],
             rand: Random = Random()) -> List[Individual]:
 
         selection = RouletteWheelSelection()
         best_indv = min(population, key=lambda indv: indv.objective)
 
-        population.extend(offspring_population)
-        
-        new_population = selection.select(size-1, population, rand=rand, is_unique=True)
-        new_population.append(best_indv)
+        bad_pop = list()
+        for indv in population:
+            if not abs(indv.objective - best_indv.objective) < self.__EPS:
+                bad_pop.append(indv)
+
+        new_population = [best_indv]
+        new_population.extend(selection.select(size-1, bad_pop, rand=rand, is_unique=True))
 
         return new_population

@@ -9,4 +9,6 @@ from .solution import Solution
 from .individual import Individual
 from .chromosome import IntChromosome, FloatChromosome
 from .binary_individual import BinaryIndividual
-from .network_random_key import NetworkRandomKey
+from .float_individual import FloatIndividual
+from .int_individual import IntIndividual
+from .network_random_keys import NetworkRandomKeys, Network
