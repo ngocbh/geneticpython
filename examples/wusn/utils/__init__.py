@@ -8,6 +8,7 @@ from __future__ import absolute_import
 from .dems_input import DemsInput
 from .input import *
 from .point import *
+from .visualization import *
 
 if __name__ == '__main__':
     pass

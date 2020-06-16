@@ -211,7 +211,7 @@ class NSGAIIEngine():
 
         for i in range(len(childs)):
             childs[i] = self.mutation.mutate(childs[i], rand=self.rand)
-        
+            
         return childs
 
     def run(self):
@@ -224,6 +224,8 @@ class NSGAIIEngine():
 
         self.population.individuals = self.evaluate(self.population.individuals)
         self.population.individuals = self.sort(self.population.individuals)
+        if self.report:
+            self.report(0)
 
         pbar = tqdm(range(self.MAX_ITER))
         for g in pbar:
@@ -238,7 +240,7 @@ class NSGAIIEngine():
 
             offspring_population = self.reproduction(mating_population)
             offspring_population = self.evaluate(offspring_population)
-
+            
             new_population = self.population.individuals + offspring_population
             new_population = NSGAIIEngine.sort(new_population)
 
@@ -248,6 +250,10 @@ class NSGAIIEngine():
                                             comparator=NSGAIIEngine.crowded_comparator,
                                             sorted=True,
                                             rand=self.rand)
+            
+            if self.report:
+                self.report(g+1)
+            
 
     def get_pareto_front(self) -> List[Individual]:
         pareto_front = list()
@@ -287,6 +293,12 @@ class NSGAIIEngine():
         else:
             self.objectives.append(_fn_with_objective_check)
 
+    def register_reporter(self, fn):
+        """
+            register reporter
+        """
+        self.report = fn
+        
     def maximize(self, fn):
         ''' A decorator for maximizing the objective function.
         :param fn: Original objective function

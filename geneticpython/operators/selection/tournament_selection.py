@@ -48,7 +48,7 @@ class TournamentSelection(Selection):
             comparator = self.single_objective_comparator
 
         # Check validity of tournament size.
-        if self.tournament_size >= len(population):
+        if self.tournament_size > len(population):
             msg = 'Tournament size({}) is larger than population size({})'
             raise ValueError(msg.format(self.tournament_size, len(population)))
         

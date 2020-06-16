@@ -80,4 +80,26 @@ class Population():
     def all_fits(self):
         return [indv.objective for indv in self.individuals]
 
+    def register_initialization(self, fn):
+        @wraps(fn)
+        def _fn_with_parameter_checked(rand : Random = Random()):
+            '''
+            A wrapper function for objective function with objective value check.
+            '''
+            # Check indv type.
+            if not isinstance(rand, Random):
+                raise TypeError('initialization must pass Random as argument')
+
+            # Check objective.
+            population = fn(rand)
+            is_invalid = not isinstance(population,list) or not all(isinstance(indv,Individual) for indv in population)
+            if is_invalid:
+                msg = 'returned population (type: {}) is invalid,\
+                    initialization must return list of Individual'
+                msg = msg.format(type(population))
+                raise ValueError(msg)
+            return population
+        
+        self.init_population = _fn_with_parameter_checked
+
     

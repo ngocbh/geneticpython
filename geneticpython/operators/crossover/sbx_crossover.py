@@ -33,7 +33,7 @@ class SBXCrossover(Crossover):
             https://github.com/msu-coinlab/pymoo/blob/master/pymoo/operators/crossover/simulated_binary_crossover.py
     """
     def __init__(self, pc : float, distribution_index : float = 5.0):
-        if pc <= 0.0 or pc > 1.0:
+        if pc < 0.0 or pc > 1.0:
             raise ValueError('Invalid crossover probability')
         self.pc = pc
         if distribution_index < 0: 

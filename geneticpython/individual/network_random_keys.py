@@ -16,6 +16,9 @@ class Network():
     def __init__(self):
         pass
 
+    def init_solution(self):
+        raise NotImplementedError
+
     def try_add_edge(i : int):
         raise NotImplementedError
 
@@ -42,6 +45,8 @@ class NetworkRandomKeys(Individual):
     def decode(self):
         genes = np.copy(self.chromosome.genes)
         order = np.argsort(-genes)
+
+        self.network.init_solution()
 
         for i in order:
             if self.network.try_add_edge(i):

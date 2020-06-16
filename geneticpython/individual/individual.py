@@ -40,15 +40,15 @@ class Individual:
 
     def __str__(self):
         if self.objective:
-            return str(self.chromosome) + ' -> ' + str(self.objective)
+            return str(self.chromosome) + ' -> ' + str(self.objective) + '\n'
         else:
-            return str(self.chromosome) + ' -> ' + str(self.objectives)
+            return str(self.chromosome) + ' -> ' + str(self.objectives) + '\n'
 
     def __repr__(self):
         if self.objective:
-            return str(self.chromosome) + ' -> ' + str(self.objective)
+            return str(self.chromosome) + ' -> ' + str(self.objective) + '\n'
         else:
-            return str(self.chromosome) + ' -> ' + str(self.objectives)
+            return str(self.chromosome) + ' -> ' + str(self.objectives) + '\n'
 
     def create_seed(self, seed):
         self.rand = random.Random(seed)
