@@ -20,7 +20,7 @@ class WusnConstants:
     k_bit = 4000
 
     # hop constraint
-    hop = 6
+    hop = 12
 
     E_da = e_da * k_bit
 
