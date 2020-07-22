@@ -8,12 +8,14 @@ from __future__ import absolute_import
 from .chromosome import FloatChromosome
 from .individual import Individual
 
+
 class FloatIndividual(Individual):
 
     def __init__(self, length, domain):
-        self.chromosome = FloatChromosome(length, domain)
-        self.objective = None
-        self.objectives = None
-        
+        chromosome = FloatChromosome(length, domain)
+        super(FloatIndividual, self).__init__(chromosome)
+
+
 if __name__ == '__main__':
     pass
+

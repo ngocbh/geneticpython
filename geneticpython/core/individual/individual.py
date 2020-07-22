@@ -17,6 +17,7 @@ import numpy as np
 import random
 import inspect
 
+
 class Individual:
     """
         Representation of an Individual.
@@ -27,7 +28,7 @@ class Individual:
         if not, gene_domains will extend the last gene domain to the rest. 
     """
 
-    def __init__(self, chromosome: Chromosome, solution : Solution = None, rand : Random = Random()):
+    def __init__(self, chromosome: Chromosome, solution: Solution = None, rand: Random = Random()):
         """
             Initialization for Individual
             :init chromosome
@@ -35,26 +36,28 @@ class Individual:
         self.chromosome = chromosome
         self.solution = solution
         self.rand = rand
-        self.objective = None
-        self.objectives = None
+        self._objective = None
+        self._coefficient = None
+        self._objectives = None
+        self._coefficients = None
 
     def __str__(self):
-        if self.objective:
-            return str(self.chromosome) + ' -> ' + str(self.objective) + '\n'
+        if self._objective:
+            return str(self.chromosome) + ' -> ' + str(self._objective) + '\n'
         else:
-            return str(self.chromosome) + ' -> ' + str(self.objectives) + '\n'
+            return str(self.chromosome) + ' -> ' + str(self._objectives) + '\n'
 
     def __repr__(self):
-        if self.objective:
-            return str(self.chromosome) + ' -> ' + str(self.objective) + '\n'
+        if self._objective:
+            return str(self.chromosome) + ' -> ' + str(self._objective) + '\n'
         else:
-            return str(self.chromosome) + ' -> ' + str(self.objectives) + '\n'
+            return str(self.chromosome) + ' -> ' + str(self._objectives) + '\n'
 
     def create_seed(self, seed):
         self.rand = random.Random(seed)
 
     def set_rand(self, rand):
-        self.rand = rand    
+        self.rand = rand
 
     def clone(self):
         """
@@ -63,7 +66,7 @@ class Individual:
         indiv = deepcopy(self)
         return indiv
 
-    def init(self, chromosome : Chromosome = None, solution : Solution = None, rand = random.Random()):
+    def init(self, chromosome: Chromosome = None, solution: Solution = None, rand=random.Random()):
         if chromosome != None:
             self.chromosome = chromosome
         elif solution != None:
@@ -71,24 +74,36 @@ class Individual:
             self.chromosome = self.encode(solution)
         else:
             # initialize randomly
-            self.chromosome.init_genes(rand = rand)
-    
+            self.chromosome.init_genes(rand=rand)
+
     def update_genes(self, genes: Union[np.ndarray, tuple, list]):
         self.chromosome.init_genes(genes=genes)
 
+    @property
+    def objective(self):
+        return self._objective * self._coefficient
+
+    @property
+    def objectives(self):
+        objectives = []
+        for _coefficient, _objective in zip(self._coefficients, self._objectives):
+            objectives.append(_coefficient * _objective)
+
+        return objectives
+
     def is_valid(self):
-        return self.chromosome.is_valid() and (not solution or self.solution.is_valid())
+        return self.chromosome.is_valid() and (not self.solution or self.solution.is_valid())
 
     def decode(self):
         """
             Decode chromosome sequence to readable solution
-        
+
         :return solution
         :rtype Solution
         """
         raise NotImplementedError
 
-    def encode(self):
+    def encode(self, solution):
         """
             Encode from solution to chromosome
 
@@ -96,15 +111,8 @@ class Individual:
         :rtype: list of something
         """
         raise NotImplementedError
-    
-    def objective(self):
-        """
-            objective function is used to evaluate solution
 
-        :return: The chromsome sequence
-        :rtype: list of something
-        """
-        raise NotImplementedError
 
 if __name__ == "__main__":
     pass
+

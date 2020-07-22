@@ -25,25 +25,26 @@ class TournamentSelection(Selection):
         choose the third best individual with probability p*((1-p)^2)
         and so on
     """
-    def __init__(self, tournament_size : int = 2, p : float = 1.0):
+
+    def __init__(self, tournament_size: int = 2, p: float = 1.0):
         self.tournament_size = tournament_size
         if p <= 0.0 or p > 1.0:
             raise ValueError('Invalid probability 0 <= p <= 1')
         self.p = p
 
-    def single_objective_comparator(self, x : Individual, y: Individual) -> int:
-        if x.objective < y.objective:
+    def single_objective_comparator(self, x: Individual, y: Individual) -> int:
+        if x._objective < y._objective:
             return -1
-        elif x.objective > y.objective:
+        elif x._objective > y._objective:
             return 1
         else:
             return 0
 
     def select(self, size: int,
-            population: List[Individual], 
-            comparator: Callable[[Individual, Individual], bool] = None,
-            rand : Random = Random()) -> List[Individual]:
-        
+               population: List[Individual],
+               comparator: Callable[[Individual, Individual], bool] = None,
+               rand: Random = Random()) -> List[Individual]:
+
         if not comparator:
             comparator = self.single_objective_comparator
 
@@ -51,9 +52,9 @@ class TournamentSelection(Selection):
         if self.tournament_size > len(population):
             msg = 'Tournament size({}) is larger than population size({})'
             raise ValueError(msg.format(self.tournament_size, len(population)))
-        
+
         selected_indvs = []
-        
+
         for _ in range(size):
             chosen = None
             competitors = rand.sample(population, self.tournament_size)
@@ -63,16 +64,15 @@ class TournamentSelection(Selection):
                 if rand.uniform(0, 1) <= self.p:
                     chosen = competitors[i]
                     break
-            
+
             if not chosen:
                 chosen = competitors[rand.randint(0, len(competitors)-1)]
-            
+
             selected_indvs.append(chosen)
-        
+
         return selected_indvs
 
-            
 
-    
 if __name__ == '__main__':
     pass
+

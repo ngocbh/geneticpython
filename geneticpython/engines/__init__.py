@@ -5,5 +5,7 @@
 """
 from __future__ import absolute_import
 
-from .gaengine import GAEngine
-from .nsgaiiengine import NSGAIIEngine
+from .geneticengine import GeneticEngine
+from .multi_objective import *
+from .single_objective import *
+

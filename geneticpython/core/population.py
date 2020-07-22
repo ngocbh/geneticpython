@@ -14,9 +14,10 @@ from .individual import Individual
 from random import Random
 import random
 
+
 class Population():
 
-    def __init__(self, individual_temp: Individual, size=100, init_population : Callable[[], List[Individual]] = None):
+    def __init__(self, individual_temp: Individual, size=100, init_population: Callable[[], List[Individual]] = None):
         self.individual_temp = individual_temp
         self.rand = random.Random()
         self.size = size
@@ -32,14 +33,14 @@ class Population():
             ret += str(indiv) + '\n'
         ret += 'End population]'
         return ret
-    
+
     def __repr__(self):
         ret = '['
         for indiv in self.individuals:
             ret += str(indiv) + '\n'
         ret += ']'
         return ret
-    
+
     def __getitem__(self, key):
         '''
         Get individual by index.
@@ -56,14 +57,14 @@ class Population():
 
     def create_seed(self, seed):
         self.rand = random.Random(seed)
-    
-    def set_rand(self,rand):
+
+    def set_rand(self, rand):
         self.rand = rand
 
-    def set_initialization(self, callback : Callable[[], List[Individual]]):
+    def set_initialization(self, callback: Callable[[], List[Individual]]):
         self.init_population = callback
 
-    def init_population_randomly(self, rand : Random = Random()) -> List[Individual]:
+    def init_population_randomly(self, rand: Random = Random()) -> List[Individual]:
         ret = []
         for _ in range(self.size):
             new_indiv = self.individual_temp.clone()
@@ -74,15 +75,15 @@ class Population():
     def clear(self):
         self.individuals.clear()
 
-    def sort(self,reversed=True):
-        self.individuals.sort(key=lambda x: x.objective,reversed=reversed)
-    
+    def sort(self, reversed=True):
+        self.individuals.sort(key=lambda x: x._objective, reversed=reversed)
+
     def all_fits(self):
-        return [indv.objective for indv in self.individuals]
+        return [indv._objective for indv in self.individuals]
 
     def register_initialization(self, fn):
         @wraps(fn)
-        def _fn_with_parameter_checked(rand : Random = Random()):
+        def _fn_with_parameter_checked(rand: Random = Random()):
             '''
             A wrapper function for objective function with objective value check.
             '''
@@ -92,14 +93,14 @@ class Population():
 
             # Check objective.
             population = fn(rand)
-            is_invalid = not isinstance(population,list) or not all(isinstance(indv,Individual) for indv in population)
+            is_invalid = not isinstance(population, list) or not all(
+                isinstance(indv, Individual) for indv in population)
             if is_invalid:
                 msg = 'returned population (type: {}) is invalid,\
                     initialization must return list of Individual'
                 msg = msg.format(type(population))
                 raise ValueError(msg)
             return population
-        
+
         self.init_population = _fn_with_parameter_checked
 
-    

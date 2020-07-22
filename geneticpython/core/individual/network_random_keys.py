@@ -11,6 +11,7 @@ from typing import Dict, List
 
 import numpy as np
 
+
 class Network():
 
     def __init__(self):
@@ -19,14 +20,15 @@ class Network():
     def init_solution(self):
         raise NotImplementedError
 
-    def try_add_edge(i : int):
+    def try_add_edge(self, i: int):
         raise NotImplementedError
 
-    def add_edge(i : int):
+    def add_edge(self, i: int):
         raise NotImplementedError
 
-    def repair():
+    def repair(self):
         pass
+
 
 class NetworkRandomKeys(Individual):
     """
@@ -35,12 +37,11 @@ class NetworkRandomKeys(Individual):
         Network Random Keys—A Tree Representation Scheme for Genetic and Evolutionary Algorithms. 
         Evolutionary computation. 10. 75-97. 10.1162/106365602317301781. 
     """
-    def __init__(self, length, network : Network):
-        self.chromosome = FloatChromosome(length, [0,1])
-        self.objective = None
-        self.objectives = None
+
+    def __init__(self, length, network: Network):
+        chromosome = FloatChromosome(length, [0, 1])
+        super(NetworkRandomKeys, self).__init__(chromosome)
         self.network = network
-    
 
     def decode(self):
         genes = np.copy(self.chromosome.genes)
@@ -55,5 +56,7 @@ class NetworkRandomKeys(Individual):
         self.network.repair()
         return self.network
 
+
 if __name__ == '__main__':
     pass
+

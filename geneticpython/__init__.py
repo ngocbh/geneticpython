@@ -5,6 +5,6 @@
 """
 from __future__ import absolute_import
 
-from .engine import *
-from .population import *
-from .individual import *
+from .engines import *
+from .callbacks import *
+from .core import *

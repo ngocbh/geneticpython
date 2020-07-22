@@ -9,11 +9,13 @@ from .individual import Individual
 from .chromosome import IntChromosome
 from .solution import Solution
 
+
 class BinaryIndividual(Individual):
     """
         BinaryIndividual only accept gene with binary value
     """
+
     def __init__(self, length):
-        self.chromosome = IntChromosome(length, [0,1])
-        self.objective = None
-        self.objectives = None
+        chromosome = IntChromosome(length, [0, 1])
+        super(BinaryIndividual, self).__init__(chromosome)
+
