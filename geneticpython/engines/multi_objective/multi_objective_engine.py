@@ -10,10 +10,11 @@ from __future__ import absolute_import
 
 from typing import Union, Callable, List
 from functools import wraps
+from abc import ABC, abstractmethod
 
 from ..geneticengine import GeneticEngine
 from ...callbacks import Callback, CallbackList
-from ...callbacks import History, MultiObjectiveHistory
+from ...callbacks import History
 from ...core.population import Population
 from ...core.operators import Selection, Crossover, Mutation, Replacement
 from ...core.individual import Individual
@@ -33,7 +34,7 @@ class MultiObjectiveEngine(GeneticEngine):
                  max_iter: int = 100,
                  random_state: int = None):
         callback_list = CallbackList(
-            callbacks, add_mo_history=True, add_progbar=True)
+            callbacks, add_history=True, add_progbar=True)
         super(MultiObjectiveEngine, self).__init__(population=population,
                                                    selection=selection,
                                                    selection_size=selection_size,
@@ -43,6 +44,19 @@ class MultiObjectiveEngine(GeneticEngine):
                                                    callbacks=callback_list,
                                                    max_iter=max_iter,
                                                    random_state=random_state)
+
+    @abstractmethod
+    def get_pareto_front(self) -> List[Individual]:
+        pass
+
+    def _update_logs(self, logs):
+        logs = logs or {}
+        pareto_front = [
+            indv.objectives for indv in self.get_pareto_front()]
+        logs.update({'pareto_front': pareto_front})
+        solutions = [indv.objectives for indv in self.get_all_solutions()]
+        logs.update({'solutions': solutions})
+        return logs
 
     def minimize_objective(self, fn):
         """

@@ -23,20 +23,17 @@ class ProgbarLogger(Callback):
         self.progbar = tqdm(range(self.engine.MAX_ITER))
 
     def on_generation_end(self, gen, logs=None):
-        logs = self._update_logs(logs)
-        self.progbar.set_postfix(logs, refresh=True)
+        self._update_metrics()
+        self.progbar.set_postfix(self.metrics, refresh=True)
         self.progbar.update()
 
     def on_running_end(self, logs=None):
         self.progbar.close()
 
-    def _update_logs(self, logs):
-        logs = logs or OrderedDict()
+    def _update_metrics(self):
+        self.metrics = self.metrics or OrderedDict()
         if self.default_metrics and self.engine.metrics:
             if not isinstance(self.engine.metrics, (dict, OrderedDict)):
                 raise TypeError(
                     f'engine.metrics (type : {type(self.engine.metrics).__name__}) has be an instance of Dict or OrderedDict')
-            for name, value in self.engine.metrics.items():
-                logs[name] = value
-
-        return logs
+            self.metrics.update(self.engine.metrics)

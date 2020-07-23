@@ -14,7 +14,7 @@ from ...core.individual import Individual
 from ...core.population import Population
 from ...core.operators import Selection, Crossover, Mutation, Replacement, RankReplacement
 from ..geneticengine import GeneticEngine
-from ...callbacks import CallbackList, Callback, History, MultiObjectiveHistory
+from ...callbacks import CallbackList, Callback, History
 from .multi_objective_engine import MultiObjectiveEngine
 
 import random
@@ -238,7 +238,7 @@ class NSGAIIEngine(MultiObjectiveEngine):
             comparator=NSGAIIEngine.crowded_comparator,
             sorted=True,
             rand=self.rand)
-        return new_population
+        return new_population 
 
     def run(self) -> History:
         return super(NSGAIIEngine, self).run()

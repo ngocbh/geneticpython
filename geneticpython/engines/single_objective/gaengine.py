@@ -15,7 +15,7 @@ from ...core.population import Population
 from ...core.operators import Selection, Crossover, Mutation, Replacement
 from ..geneticengine import GeneticEngine
 from .single_objective_engine import SingleObjectiveEngine
-from ...callbacks import Callback, History, SingleObjectiveHistory, CallbackList
+from ...callbacks import Callback, History, CallbackList
 
 import random
 import math

@@ -17,8 +17,7 @@ from ...core.population import Population
 from ...core.operators import Selection, Crossover, Mutation, Replacement
 from ...core.individual import Individual
 from ...callbacks import Callback, CallbackList
-from ...callbacks import History, SingleObjectiveHistory
-
+from ...callbacks import History
 import math
 
 
@@ -35,7 +34,7 @@ class SingleObjectiveEngine(GeneticEngine):
                  random_state: int = None):
 
         callback_list = CallbackList(
-            callbacks, add_so_history=True, add_progbar=True)
+            callbacks, add_history=True, add_progbar=True)
         super(SingleObjectiveEngine, self).__init__(population=population,
                                                     objective=objective,
                                                     selection=selection,
@@ -55,6 +54,11 @@ class SingleObjectiveEngine(GeneticEngine):
     def _update_metrics(self):
         self.metrics = self.metrics or OrderedDict()
         self.metrics['best_objective'] = self.get_best_indv().objective
+
+    def _update_logs(self, logs):
+        logs = logs or {}
+        logs.update(self.metrics)
+        return logs
 
     def minimize_objective(self, fn):
         """

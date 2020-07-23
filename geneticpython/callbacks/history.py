@@ -14,8 +14,15 @@ from .callback import Callback
 
 
 class History(Callback):
+    """Callback that records events into a `History` object.
+    This callback is automatically applied to
+    every Genetic engine. The `History` object
+    gets returned by the `run` method of engine.
+    """
+
     def __init__(self):
-        pass
+        super(History, self).__init__()
+        self.history = []
 
     def on_init_population_end(self, logs=None):
         pass
@@ -24,12 +31,8 @@ class History(Callback):
         pass
 
     def on_generation_end(self, gen, logs=None):
-        pass
-
-
-class MultiObjectiveHistory(History):
-    pass
-
-
-class SingleObjectiveHistory(History):
-    pass
+        logs = logs or {}
+        self.history.append(logs)
+        # Set the history attribute on the model after the epoch ends. This will
+        # make sure that the state which is set is the latest one.
+        self.engine.history = self

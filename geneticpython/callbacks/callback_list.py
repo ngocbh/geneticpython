@@ -11,37 +11,28 @@ from __future__ import absolute_import
 from typing import List
 
 from .callback import Callback
-from .history import History, SingleObjectiveHistory, MultiObjectiveHistory
+from .history import History
 from .progbar_logger import ProgbarLogger
 
 
 class CallbackList():
-    def __init__(self, callbacks: List[Callback] = None, add_so_history=False, add_mo_history=False, add_progbar=False):
+    def __init__(self, callbacks: List[Callback] = None, add_history=False, add_progbar=False):
         self.callbacks = callbacks if callbacks else []
         self._add_default_callbacks(
-            add_so_history, add_mo_history, add_progbar)
+            add_history, add_progbar)
 
-    def _add_default_callbacks(self, add_so_history, add_mo_history, add_progbar):
-        if add_mo_history and add_so_history:
-            raise ValueError("Cannot add both SingleObjectiveHistory and MultiObjectiveHistory\n \
-                             Use one of them")
-
+    def _add_default_callbacks(self, add_history, add_progbar):
         self._history = None
         self._progbar = None
 
         for cb in self.callbacks:
-            if isinstance(cb, SingleObjectiveHistory) and add_so_history:
-                self._history = cb
-            elif isinstance(cb, MultiObjectiveHistory) and add_mo_history:
+            if isinstance(cb, History) and add_history:
                 self._history = cb
             elif isinstance(cb, ProgbarLogger):
                 self._progbar = cb
 
-        if self._history is None and add_so_history:
-            self._history = SingleObjectiveHistory()
-            self.callbacks.append(self._history)
-        if self._history is None and add_mo_history:
-            self._history = MultiObjectiveHistory()
+        if self._history is None and add_history:
+            self._history = History()
             self.callbacks.append(self._history)
         if self._progbar is None and add_progbar:
             self._progbar = ProgbarLogger()

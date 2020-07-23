@@ -52,6 +52,7 @@ class GeneticEngine(ABC):
         self.callbacks = callbacks
         self.callbacks.set_engine(self)
         self.metrics = None
+        self.history = None
 
     def create_seed(self, seed: int):
         self.rand = random.Random(seed)
@@ -88,43 +89,48 @@ class GeneticEngine(ABC):
     def do_replacement(self, new_population: List[Individual]) -> List[Individual]:
         pass
 
-    def _update_metrics(self):
+    def _update_metrics(self) -> None:
+        pass
+
+    def _update_logs(self, logs) -> None:
         pass
 
     def run(self) -> History:
-        self.callbacks.on_running_begin()
+        logs = None
+        self.callbacks.on_running_begin(logs=logs)
 
-        self.callbacks.on_init_population_begin()
+        self.callbacks.on_init_population_begin(logs=logs)
         self.population.individuals = self.do_initialization()
-        self.callbacks.on_init_population_end()
+        self.callbacks.on_init_population_end(logs=logs)
 
         for gen in range(self.MAX_ITER):
-            self.callbacks.on_generation_begin(gen)
-            self.callbacks.on_selection_begin(gen)
+            self.callbacks.on_generation_begin(gen, logs=logs)
+            self.callbacks.on_selection_begin(gen, logs=logs)
             mating_population = self.do_selection()
-            self.callbacks.on_selection_end(gen)
+            self.callbacks.on_selection_end(gen, logs=logs)
 
-            self.callbacks.on_reproduction_begin(gen)
+            self.callbacks.on_reproduction_begin(gen, logs=logs)
             offspring_population = self.do_reproduction(mating_population)
-            self.callbacks.on_reproduction_end(gen)
+            self.callbacks.on_reproduction_end(gen, logs=logs)
 
-            self.callbacks.on_evaluation_begin(gen)
+            self.callbacks.on_evaluation_begin(gen, logs=logs)
             offspring_population = self.do_evaluation(offspring_population)
-            self.callbacks.on_evaluation_end(gen)
+            self.callbacks.on_evaluation_end(gen, logs=logs)
 
             new_population = self.population.individuals + offspring_population
 
-            self.callbacks.on_replacement_begin(gen)
+            self.callbacks.on_replacement_begin(gen, logs=logs)
             self.population.individuals = self.do_replacement(new_population)
-            self.callbacks.on_replacement_end(gen)
+            self.callbacks.on_replacement_end(gen, logs=logs)
 
             self._update_metrics()
+            logs = self._update_logs(logs)
 
-            self.callbacks.on_generation_end(gen)
+            self.callbacks.on_generation_end(gen, logs=logs)
 
-        self.callbacks.on_running_end()
+        self.callbacks.on_running_end(logs=logs)
 
-        return self.callbacks._history
+        return self.history
 
     def get_all_solutions(self) -> List[Individual]:
         return self.population.individuals

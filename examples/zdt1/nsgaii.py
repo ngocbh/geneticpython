@@ -58,7 +58,8 @@ def objective2(indv):
     h = eval_h(solution[0], g)
     return h * g
 
-engine.run()
+history = engine.run()
+print(history)
 
 pareto_front = engine.get_pareto_front()
 
