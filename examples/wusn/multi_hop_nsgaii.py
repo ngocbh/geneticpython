@@ -7,6 +7,13 @@
 # Created by ngocjr7 on [14-06-2020 21:22:52]
 """
 from __future__ import absolute_import
+
+import sys
+import os
+
+WORKING_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(WORKING_DIR, '../../../geneticpython'))
+
 import time
 import json
 import random
@@ -21,16 +28,11 @@ from utils import visualize_front, make_gif, visualize_solutions, remove_file, s
 from utils import WusnInput
 from parameters import *
 
-from geneticpython.operators import TournamentSelection, SBXCrossover, PolynomialMutation
+from geneticpython.core.operators import TournamentSelection, SBXCrossover, PolynomialMutation
 from geneticpython import Population
-from geneticpython.individual import NetworkRandomKeys
+from geneticpython.core.individual import NetworkRandomKeys
 from geneticpython.engines import NSGAIIEngine
-
-import sys
-import os
-
-WORKING_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(WORKING_DIR, '../../../geneticpython'))
+from geneticpython.utils.visualization import save_history_as_gif
 
 
 class MultiHopIndividual(NetworkRandomKeys):
@@ -78,7 +80,7 @@ def solve(filename, visualization=False):
     #         break
     # return
 
-    population = Population(indv_temp, POPULATION_SIZE)
+    population = Population(indv_temp, MH_POP_SIZE)
 
     @population.register_initialization
     def init_population(rand: Random = Random()):
@@ -97,20 +99,19 @@ def solve(filename, visualization=False):
             ret.append(new_indv)
         return ret
 
-    selection = TournamentSelection(tournament_size=TOURNAMENT_SIZE)
+    selection = TournamentSelection(tournament_size=MH_TOURNAMENT_SIZE)
     crossover = SBXCrossover(
-        pc=CROSSOVER_PROB, distribution_index=CROSSOVER_DISTRIBUTION_INDEX)
+        pc=MH_CRO_PROB, distribution_index=MH_CRO_DI)
     mutation = PolynomialMutation(
-        pm=MUTATION_PROB, distribution_index=MUTATION_DISTRIBUTION_INDEX)
+        pm=MH_MUT_PROB, distribution_index=MH_MUT_DI)
 
     engine = NSGAIIEngine(population, selection=selection,
                           crossover=crossover,
                           mutation=mutation,
-                          selection_size=SELECTION_SIZE,
-                          max_iter=MAX_ITER,
-                          random_state=SEED)
+                          selection_size=MH_SLT_SIZE,
+                          random_state=MH_SEED)
 
-    @engine.register_objective
+    @engine.minimize_objective
     def objective1(indv):
         network = indv.decode()
         if network.is_valid:
@@ -120,7 +121,7 @@ def solve(filename, visualization=False):
 
     best_mr = defaultdict(lambda: float('inf'))
 
-    @engine.register_objective
+    @engine.minimize_objective
     def objective2(indv):
         nonlocal best_mr
         network = indv.decode()
@@ -132,43 +133,7 @@ def solve(filename, visualization=False):
         else:
             return float('inf')
 
-    f1_max = None
-    f2_max = None
-    if visualization:
-        @engine.register_reporter
-        def report(gen):
-            if gen % 5 == 0 or gen < 20:
-                nonlocal f1_max, f2_max
-                solutions = engine.get_all_solutions()
-                # print(solutions)
-                f1_arr = [solution.objectives[0]
-                          for solution in solutions if solution.objectives[0] != float('inf')]
-                f2_arr = [solution.objectives[1]
-                          for solution in solutions if solution.objectives[1] != float('inf')]
-
-                if f1_max:
-                    f1_arr.append(f1_max)
-                if f2_max:
-                    f2_arr.append(f2_max)
-                if len(f1_arr) > 0:
-                    f1_max = max(f1_arr)
-                    f1_max_temp = f1_max * 1.05
-                else:
-                    f1_max_temp = None
-                if len(f2_arr) > 0:
-                    f2_max = max(f2_arr)
-                    f2_max_temp = f2_max * 1.05
-                else:
-                    f2_max_temp = None
-
-                visualize_solutions(solutions,
-                                    'results/multi_hop/{}/solutions-gen-{}.png'.format(
-                                        basename, (3 - len(str(gen))) * '0' + str(gen)),
-                                    title='solutions-gen-{}'.format(
-                                        (3 - len(str(gen))) * '0' + str(gen)),
-                                    show=False, f1_max=f1_max_temp, f2_max=f2_max_temp)
-
-    engine.run()
+    history = engine.run(generations=MH_GENS)
 
     pareto_front = engine.get_pareto_front()
     solutions = engine.get_all_solutions()
@@ -183,6 +148,12 @@ def solve(filename, visualization=False):
     save_results(pareto_front, solutions, best_mr,
                  out_dir, visualization=visualization)
 
+    
+    save_history_as_gif(history, 
+                        title="NSGAII", 
+                        objective_name=['relays', 'energy'], 
+                        gen_filter=lambda x : (x % 5 == 0), 
+                        out_dir=out_dir)
 
 if __name__ == '__main__':
     solve('data/medium/multi_hop/uu-dem1_r25_1_40.json', visualization=True)

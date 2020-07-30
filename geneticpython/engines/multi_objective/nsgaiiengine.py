@@ -11,11 +11,11 @@ from random import Random
 from tqdm.auto import tqdm
 
 from ...core.individual import Individual
-from ...core.population import Population
+from ...core.population import Population, Pareto
 from ...core.operators import Selection, Crossover, Mutation, Replacement, RankReplacement
 from ..geneticengine import GeneticEngine
 from ...callbacks import CallbackList, Callback, History
-from .multi_objective_engine import MultiObjectiveEngine
+from .multi_objective_engine import MultiObjectiveEngine, is_dominated
 
 import random
 import math
@@ -32,7 +32,7 @@ class NSGAIIEngine(MultiObjectiveEngine):
                  crossover: Crossover = None,
                  mutation: Mutation = None,
                  callbacks: List[Callback] = None,
-                 max_iter: int = 100,
+                 generations: int = 100,
                  random_state: int = None):
 
         replacement = RankReplacement()
@@ -45,7 +45,7 @@ class NSGAIIEngine(MultiObjectiveEngine):
                                            mutation=mutation,
                                            replacement=replacement,
                                            callbacks=callbacks,
-                                           max_iter=max_iter,
+                                           generations=generations,
                                            random_state=random_state)
 
     @staticmethod
@@ -73,23 +73,6 @@ class NSGAIIEngine(MultiObjectiveEngine):
             :return: List of front (List[Individual]) after nondominated sorting
             :rtype: List[List[Individual]]
         """
-        def is_dominating(a: Individual, b: Individual) -> bool:
-
-            if len(a._objectives) != len(b._objectives):
-                msg = 'The length of objective in two individual is not the same:\
-                     a has {} objectives, b has {} objectives'
-                msg = msg.format(len(a._objectives), len(b._objectives))
-                raise ValueError(msg)
-
-            dominated = False
-            for i in range(len(a._objectives)):
-                if a._objectives[i] > b._objectives[i]:
-                    return False
-                elif a._objectives[i] < b._objectives[i]:
-                    dominated = True
-
-            return dominated
-
         fronts = list()
         num_dominators = dict()
         slaves = dict()
@@ -101,9 +84,9 @@ class NSGAIIEngine(MultiObjectiveEngine):
             num_dominators[p1] = 0
 
             for p2 in population:
-                if is_dominating(p1, p2):
+                if is_dominated(p1, p2):
                     slaves[p1].append(p2)
-                elif is_dominating(p2, p1):
+                elif is_dominated(p2, p1):
                     num_dominators[p1] += 1
 
             if num_dominators[p1] == 0:
@@ -187,35 +170,14 @@ class NSGAIIEngine(MultiObjectiveEngine):
         # init population
         population = self.population.init_population(self.rand)
 
-        population = self.do_evaluation(population)
-        population = self.sort(population)
-
         return population
 
     def do_evaluation(self, population: List[Individual]) -> List[Individual]:
-        ret = list()
-        # compute objectives
-        for indv in population:
-            indv._coefficients = self.coefficients
-            indv._objectives = list()
-            for objective in self.objectives:
-                indv._objectives.append(objective(indv))
-            ret.append(indv)
-
-        return ret
+        population = NSGAIIEngine.sort(population)
+        return population
 
     def do_reproduction(self, mating_population: List[Individual]) -> List[Individual]:
-        childs = []
-        for i in range(0, len(mating_population), 2):
-            childs_temp = self.crossover.cross(father=mating_population[i],
-                                               mother=mating_population[i+1],
-                                               rand=self.rand)
-            childs.extend(childs_temp)
-
-        for i in range(len(childs)):
-            childs[i] = self.mutation.mutate(childs[i], rand=self.rand)
-
-        return childs
+        return super(NSGAIIEngine, self).do_reproduction(mating_population)
 
     def do_selection(self) -> List[Individual]:
         try:
@@ -230,26 +192,28 @@ class NSGAIIEngine(MultiObjectiveEngine):
         return mating_population
 
     def do_replacement(self, new_population) -> List[Individual]:
-        new_population = NSGAIIEngine.sort(new_population)
-
         new_population = self.replacement.replace(
             self.population.size,
             new_population,
             comparator=NSGAIIEngine.crowded_comparator,
             sorted=True,
             rand=self.rand)
-        return new_population 
+        return new_population
 
-    def run(self) -> History:
-        return super(NSGAIIEngine, self).run()
+    def run(self, generations: int = None) -> History:
+        return super(NSGAIIEngine, self).run(generations)
 
-    def get_pareto_front(self) -> List[Individual]:
+    def get_pareto_front(self) -> Pareto:
         pareto_front = list()
         for indv in self.population.individuals:
-            if indv.nondominated_rank == 0:
-                pareto_front.append(indv)
+            try:
+                if indv.nondominated_rank == 0:
+                    pareto_front.append(indv)
+            except:
+                raise ValueError(f"Cannot get nondominated_rank from individuals\
+                                 The engine has not run yet")
 
-        return pareto_front
+        return Pareto(pareto_front)
 
 
 if __name__ == '__main__':

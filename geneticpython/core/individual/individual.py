@@ -8,8 +8,7 @@ from __future__ import absolute_import
 from .solution import Solution
 from .chromosome import Chromosome, IntChromosome
 
-from typing import Union
-
+from typing import List, Union, Callable, Tuple, NewType
 from copy import deepcopy
 from random import Random
 
@@ -43,15 +42,15 @@ class Individual:
 
     def __str__(self):
         if self._objective:
-            return str(self.chromosome) + ' -> ' + str(self._objective) + '\n'
+            return str(self.chromosome) + ' -> ' + str(self.objective) + '\n'
         else:
-            return str(self.chromosome) + ' -> ' + str(self._objectives) + '\n'
+            return str(self.chromosome) + ' -> ' + str(self.objectives) + '\n'
 
     def __repr__(self):
         if self._objective:
-            return str(self.chromosome) + ' -> ' + str(self._objective) + '\n'
+            return str(self.chromosome) + ' -> ' + str(self.objective) + '\n'
         else:
-            return str(self.chromosome) + ' -> ' + str(self._objectives) + '\n'
+            return str(self.chromosome) + ' -> ' + str(self.objectives) + '\n'
 
     def create_seed(self, seed):
         self.rand = random.Random(seed)

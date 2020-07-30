@@ -8,7 +8,7 @@ import sys, os
 WORKING_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(WORKING_DIR, '../../../geneticpython'))
 
-from geneticpython.individual import Network
+from geneticpython.core.individual import Network
 from collections import deque
 from utils.input import WusnInput, WusnConstants
 from utils.point import distance

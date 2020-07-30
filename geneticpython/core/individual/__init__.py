@@ -5,7 +5,7 @@
 """
 from __future__ import absolute_import
 
-from .solution import Solution
+from .solution import Solution, SimpleSolution
 from .individual import Individual
 from .chromosome import IntChromosome, FloatChromosome
 from .binary_individual import BinaryIndividual

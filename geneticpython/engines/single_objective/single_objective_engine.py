@@ -30,7 +30,7 @@ class SingleObjectiveEngine(GeneticEngine):
                  mutation: Mutation = None,
                  replacement: Replacement = None,
                  callbacks: List[Callback] = None,
-                 max_iter: int = 100,
+                 generations: int = 100,
                  random_state: int = None):
 
         callback_list = CallbackList(
@@ -43,7 +43,7 @@ class SingleObjectiveEngine(GeneticEngine):
                                                     mutation=mutation,
                                                     replacement=replacement,
                                                     callbacks=callback_list,
-                                                    max_iter=max_iter,
+                                                    generations=generations,
                                                     random_state=random_state)
 
     def get_best_indv(self) -> Individual:
@@ -59,6 +59,17 @@ class SingleObjectiveEngine(GeneticEngine):
         logs = logs or {}
         logs.update(self.metrics)
         return logs
+
+    def compute_objectives(self, population: List[Individual]) -> List[Individual]:
+        ret = list()
+        # compute objectives
+        for indv in population:
+            if self.objective is None:
+                raise ValueError(f"Engine has no registered objective functions")
+            indv._coefficient = self.coefficient
+            indv._objective = self.objective(indv)
+            ret.append(indv)
+        return ret
 
     def minimize_objective(self, fn):
         """

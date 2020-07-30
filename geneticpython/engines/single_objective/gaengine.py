@@ -25,42 +25,22 @@ import copy
 class GAEngine(SingleObjectiveEngine):
 
     def do_initialization(self) -> List[Individual]:
-        population = self.population.init_population(rand=self.rand)
-        population = self.do_evaluation(population)
-        return population
+        return super(GAEngine, self).do_initialization()
 
     def do_selection(self) -> List[Individual]:
-        return self.selection.select(self.selection_size,
-                                     self.population,
-                                     rand=self.rand)
+        return super(GAEngine, self).do_selection()
 
     def do_reproduction(self, mating_population: List[Individual]) -> List[Individual]:
-        childs = []
-        for i in range(0, len(mating_population), 2):
-            childs_temp = self.crossover.cross(
-                father=mating_population[i], mother=mating_population[i+1], rand=self.rand)
-            childs.extend(childs_temp)
-
-        for i in range(len(childs)):
-            childs[i] = self.mutation.mutate(childs[i], rand=self.rand)
-
-        return childs
+        return super(GAEngine, self).do_reproduction(mating_population)
 
     def do_evaluation(self, population: List[Individual]) -> List[Individual]:
-        ret = list()
-        for indv in population:
-            indv._objective = self.objective(indv)
-            indv._coefficient = self.coefficient
-            ret.append(indv)
-        return ret
+        return super(GAEngine, self).do_evaluation(population)
 
     def do_replacement(self, new_population: List[Individual]) -> List[Individual]:
-        return self.replacement.replace(self.population.size,
-                                        new_population,
-                                        rand=self.rand)
+        return super(GAEngine, self).do_replacement(new_population)
 
-    def run(self) -> History:
-        return super(GAEngine, self).run()
+    def run(self, generations: int = None) -> History:
+        return super(GAEngine, self).run(generations)
 
 
 if __name__ == "__main__":

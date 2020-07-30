@@ -20,7 +20,7 @@ class ProgbarLogger(Callback):
         self.default_metrics = default_metrics
 
     def on_init_population_end(self, logs=None):
-        self.progbar = tqdm(range(self.engine.MAX_ITER))
+        self.progbar = tqdm(range(self.engine.generations))
 
     def on_generation_end(self, gen, logs=None):
         self._update_metrics()

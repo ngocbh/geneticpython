@@ -17,9 +17,29 @@ from ...callbacks import Callback, CallbackList
 from ...callbacks import History
 from ...core.population import Population
 from ...core.operators import Selection, Crossover, Mutation, Replacement
-from ...core.individual import Individual
+from ...core.individual import Individual, SimpleSolution
 
 import math
+
+
+def is_dominated(a: Individual, b: Individual) -> bool:
+    """
+        Return True if a dominate b, otherwise return False
+    """
+    if len(a._objectives) != len(b._objectives):
+        msg = 'The length of objective in two individual is not the same:\
+             a has {} objectives, b has {} objectives'
+        msg = msg.format(len(a._objectives), len(b._objectives))
+        raise ValueError(msg)
+
+    dominated = False
+    for i in range(len(a._objectives)):
+        if a._objectives[i] > b._objectives[i]:
+            return False
+        elif a._objectives[i] < b._objectives[i]:
+            dominated = True
+
+    return dominated
 
 
 class MultiObjectiveEngine(GeneticEngine):
@@ -31,7 +51,7 @@ class MultiObjectiveEngine(GeneticEngine):
                  mutation: Mutation = None,
                  replacement: Replacement = None,
                  callbacks: List[Callback] = None,
-                 max_iter: int = 100,
+                 generations: int = 100,
                  random_state: int = None):
         callback_list = CallbackList(
             callbacks, add_history=True, add_progbar=True)
@@ -42,7 +62,7 @@ class MultiObjectiveEngine(GeneticEngine):
                                                    mutation=mutation,
                                                    replacement=replacement,
                                                    callbacks=callback_list,
-                                                   max_iter=max_iter,
+                                                   generations=generations,
                                                    random_state=random_state)
 
     @abstractmethod
@@ -57,6 +77,21 @@ class MultiObjectiveEngine(GeneticEngine):
         solutions = [indv.objectives for indv in self.get_all_solutions()]
         logs.update({'solutions': solutions})
         return logs
+
+    def compute_objectives(self, population: List[Individual]) -> List[Individual]:
+        ret = list()
+        # compute objectives
+        for indv in population:
+            if self.objectives is None:
+                raise ValueError(
+                    f"Engine has no registered objective functions")
+            indv._coefficients = self.coefficients
+            indv._objectives = list()
+            for objective in self.objectives:
+                indv._objectives.append(objective(indv))
+            ret.append(indv)
+        return ret
+
 
     def minimize_objective(self, fn):
         """

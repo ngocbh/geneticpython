@@ -8,5 +8,5 @@ Description:
 
 from __future__ import absolute_import
 
-from .multi_objective_engine import MultiObjectiveEngine, is_dominated
-from .nsgaiiengine import NSGAIIEngine
+from .analyzers import *
+from .visualization import *

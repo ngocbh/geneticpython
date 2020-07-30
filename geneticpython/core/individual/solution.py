@@ -5,6 +5,10 @@
 """
 from __future__ import absolute_import
 
+from typing import List, Union, Callable, Tuple, NewType
+
+SimpleSolution = NewType("SimpleSolution", Union[ List[Union[int, float]], Tuple[Union[int, float]] ])
+
 class Solution:
     def __init__(self):
         pass

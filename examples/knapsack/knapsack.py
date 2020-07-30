@@ -7,6 +7,7 @@ from collections import namedtuple
 from geneticpython.core.individual import BinaryIndividual
 from geneticpython import Population, GAEngine
 from geneticpython.core.operators import RouletteWheelSelection, UniformCrossover, FlipBitMutation, RouletteWheelReplacement
+from geneticpython.utils.visualization import plot_single_objective_history
 
 Item = namedtuple("Item", ['index', 'value', 'weight'])
 
@@ -47,9 +48,7 @@ engine = GAEngine(population, selection=selection,
                   selection_size=100,
                   crossover=crossover,
                   mutation=mutation,
-                  replacement=replacement,
-                  max_iter=1000)
-
+                  replacement=replacement)
 
 @engine.maximize_objective
 def fitness(indv):
@@ -69,8 +68,8 @@ def fitness(indv):
 
 
 # engine.create_seed(seed)
-history = engine.run()
-print(history.history)
+history = engine.run(generations=1000)
 ans = engine.get_best_indv()
 print(ans)
 # print(engine.population)
+plot_single_objective_history({'geneticpython': history})

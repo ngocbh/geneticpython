@@ -3,13 +3,15 @@ import sys
 WORKING_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(WORKING_DIR, '../../../geneticpython'))
 
-from geneticpython.core.individual import FloatIndividual
-from geneticpython import Population, NSGAIIEngine
+import matplotlib.pyplot as plt
+import numpy as np
+
 from geneticpython.core.operators import TournamentSelection,\
     SBXCrossover, \
     PolynomialMutation
-import numpy as np
-import matplotlib.pyplot as plt
+from geneticpython import Population, NSGAIIEngine
+from geneticpython.core.individual import FloatIndividual
+from geneticpython.utils.visualization import visualize_fronts, save_history_as_gif
 
 class ZDT1Individual(FloatIndividual):
 
@@ -31,7 +33,6 @@ engine = NSGAIIEngine(population, selection=selection,
                       crossover=crossover,
                       mutation=mutation,
                       selection_size=100,
-                      max_iter=200,
                       random_state=1)
 
 
@@ -58,33 +59,19 @@ def objective2(indv):
     h = eval_h(solution[0], g)
     return h * g
 
-history = engine.run()
-print(history)
+
+history = engine.run(generations=100)
+# print(history.history)
 
 pareto_front = engine.get_pareto_front()
-
-
-def visualize_front(front, reference_front=None):
-    fig = plt.figure()
-    ax = fig.add_axes([0, 0, 1, 1])
-
-    f1 = [solution.objectives[0] for solution in front]
-    f2 = [solution.objectives[1] for solution in front]
-
-    if reference_front is not None:
-        ax.scatter(reference_front[:, 0], reference_front[:, 1], color='black')
-    ax.scatter(f1, f2, color='r')
-
-    ax.set_xlabel('f1')
-    ax.set_ylabel('f2')
-    ax.set_title('Front Plot')
-    plt.show()
 
 
 def read_reference_points(filepath: str):
     return np.loadtxt(filepath)
 
+referenced_points=read_reference_points(
+    os.path.join(WORKING_DIR, 'data/ZDT1.pf'))
 
+save_history_as_gif(history, referenced_points=referenced_points, gen_filter=lambda x : (x % 1 == 0))
 print(len(pareto_front))
-visualize_front(pareto_front, read_reference_points(
-    os.path.join(WORKING_DIR, 'data/ZDT1.pf')))
+visualize_fronts({'nsgaii': pareto_front}, referenced_points=referenced_points)

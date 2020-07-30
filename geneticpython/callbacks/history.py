@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import os
 
 from .callback import Callback
+import copy
 
 
 class History(Callback):
@@ -32,7 +33,7 @@ class History(Callback):
 
     def on_generation_end(self, gen, logs=None):
         logs = logs or {}
-        self.history.append(logs)
+        self.history.append(copy.deepcopy(logs))
         # Set the history attribute on the model after the epoch ends. This will
         # make sure that the state which is set is the latest one.
         self.engine.history = self

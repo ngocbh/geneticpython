@@ -30,11 +30,11 @@ class GeneticEngine(ABC):
                  mutation: Mutation = None,
                  replacement: Replacement = None,
                  callbacks: CallbackList = None,
-                 max_iter: int = 100,
+                 generations: int = None,
                  random_state: int = None):
 
         self.population = population
-        self.MAX_ITER = max_iter
+        self.generations = generations
         self.selection = selection
         self.crossover = crossover
         self.mutation = mutation
@@ -53,6 +53,9 @@ class GeneticEngine(ABC):
         self.callbacks.set_engine(self)
         self.metrics = None
         self.history = None
+        self.stop_running = False
+        self.coefficients = None
+        self.coefficient = None
 
     def create_seed(self, seed: int):
         self.rand = random.Random(seed)
@@ -69,42 +72,60 @@ class GeneticEngine(ABC):
     def set_replacement(self, replacement: Replacement):
         self.replacement = replacement
 
-    @abstractmethod
     def do_initialization(self) -> List[Individual]:
-        pass
+        population = self.population.init_population(rand=self.rand)
+        return population
 
-    @abstractmethod
     def do_selection(self) -> List[Individual]:
-        pass
+        return self.selection.select(self.selection_size,
+                                     self.population,
+                                     rand=self.rand)
 
-    @abstractmethod
     def do_reproduction(self, mating_population: List[Individual]) -> List[Individual]:
-        pass
+        childs = []
+        for i in range(0, len(mating_population), 2):
+            childs_temp = self.crossover.cross(father=mating_population[i],
+                                               mother=mating_population[i+1],
+                                               rand=self.rand)
+            childs.extend(childs_temp)
 
-    @abstractmethod
+        for i in range(len(childs)):
+            childs[i] = self.mutation.mutate(childs[i], rand=self.rand)
+
+        return childs
+
     def do_evaluation(self, population: List[Individual]) -> List[Individual]:
-        pass
+        return population
+
+    def do_replacement(self, new_population: List[Individual]) -> List[Individual]:
+        return self.replacement.replace(self.population.size,
+                                        new_population,
+                                        rand=self.rand)
 
     @abstractmethod
-    def do_replacement(self, new_population: List[Individual]) -> List[Individual]:
+    def compute_objectives(self, population: List[Individual]) -> List[Individual]:
         pass
 
     def _update_metrics(self) -> None:
         pass
 
-    def _update_logs(self, logs) -> None:
-        pass
+    def _update_logs(self, logs):
+        return logs
 
-    def run(self) -> History:
+    def run(self, generations : int = None) -> History:
+        self.generations = generations or self.generations
         logs = None
         self.callbacks.on_running_begin(logs=logs)
 
         self.callbacks.on_init_population_begin(logs=logs)
         self.population.individuals = self.do_initialization()
+        self.population.individuals = self.compute_objectives(self.population.individuals)
+        self.population.individuals = self.do_evaluation(self.population.individuals)
         self.callbacks.on_init_population_end(logs=logs)
 
-        for gen in range(self.MAX_ITER):
+        for gen in range(self.generations):
             self.callbacks.on_generation_begin(gen, logs=logs)
+
             self.callbacks.on_selection_begin(gen, logs=logs)
             mating_population = self.do_selection()
             self.callbacks.on_selection_end(gen, logs=logs)
@@ -112,13 +133,15 @@ class GeneticEngine(ABC):
             self.callbacks.on_reproduction_begin(gen, logs=logs)
             offspring_population = self.do_reproduction(mating_population)
             self.callbacks.on_reproduction_end(gen, logs=logs)
+            
+            offspring_population = self.compute_objectives(offspring_population)
 
             self.callbacks.on_evaluation_begin(gen, logs=logs)
-            offspring_population = self.do_evaluation(offspring_population)
+            new_population = self.population.individuals + offspring_population
+            new_population = self.do_evaluation(new_population)
             self.callbacks.on_evaluation_end(gen, logs=logs)
 
-            new_population = self.population.individuals + offspring_population
-
+            
             self.callbacks.on_replacement_begin(gen, logs=logs)
             self.population.individuals = self.do_replacement(new_population)
             self.callbacks.on_replacement_end(gen, logs=logs)
@@ -127,6 +150,9 @@ class GeneticEngine(ABC):
             logs = self._update_logs(logs)
 
             self.callbacks.on_generation_end(gen, logs=logs)
+
+            if self.stop_running:
+                break
 
         self.callbacks.on_running_end(logs=logs)
 
