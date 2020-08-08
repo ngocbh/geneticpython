@@ -27,7 +27,7 @@ from geneticpython.core.operators import TournamentSelection, SBXCrossover, Poly
 from geneticpython import Population
 from geneticpython.core.individual import NetworkRandomKeys
 from geneticpython.engines import NSGAIIEngine
-from geneticpython.utils.visualization import save_history_as_gif
+from geneticpython.utils.visualization import save_history_as_gif, visualize_fronts
 
 class SingleHopIndividual(NetworkRandomKeys):
     def __init__(self, problem: SingleHopProblem):
@@ -36,12 +36,12 @@ class SingleHopIndividual(NetworkRandomKeys):
         super(SingleHopIndividual, self).__init__(
             problem._num_encoded_edges, network=network)
 
-def solve(filename, visualization=False):
+def solve(filename, output_dir='results/single_hop', visualization=False):
     start_time = time.time()
 
     basename, _ = os.path.splitext(os.path.basename(filename))
     os.makedirs(os.path.join(
-        WORKING_DIR, 'results/single_hop/{}'.format(basename)), exist_ok=True)
+        WORKING_DIR, '{}/{}'.format(output_dir, basename)), exist_ok=True)
     print(basename)
 
     wusnfile = os.path.join(WORKING_DIR, filename)
@@ -95,7 +95,7 @@ def solve(filename, visualization=False):
     pareto_front = engine.get_pareto_front()
     solutions = engine.get_all_solutions()
 
-    out_dir = os.path.join(WORKING_DIR,  f'results/single_hop/{basename}')
+    out_dir = os.path.join(WORKING_DIR,  f'{output_dir}/{basename}')
     end_time = time.time()
 
     with open(os.path.join(out_dir, 'time.txt'), mode='w') as f:
@@ -104,12 +104,17 @@ def solve(filename, visualization=False):
     save_results(pareto_front, solutions, best_mr,
                  out_dir, visualization=False)
     
+    visualize_fronts({'nsgaii': pareto_front}, show=False, save=True,
+                     title=f'pareto fronts {basename}',
+                     filepath=os.path.join(out_dir, 'pareto_fronts.png'),
+                     objective_name=['relays', 'energy consumption'])
+
     save_history_as_gif(history, 
-                        title="NSGAII", 
+                        title="NSGAII - single-hop", 
                         objective_name=['relays', 'energy'], 
                         gen_filter=lambda x : (x % 1 == 0), 
                         out_dir=out_dir)
 
 
 if __name__ == '__main__':
-    solve('data/medium/single_hop/ga-dem1_r25_1.json', visualization=True)
+    solve('data/medium/single_hop/ga-dem1_r25_1.json', visualization=False)

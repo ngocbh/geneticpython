@@ -119,8 +119,8 @@ def save_results(pareto_front, solutions, best_mr, out_dir, visualization=False)
         solution_dict = {}
         network = solution.decode()
         solution_dict["chromosome"] = NoIndent(list(solution.chromosome))
-        solution_dict["num_used_relays"] = network.num_used_relays
-        solution_dict["energy_consumption"] = network.calc_max_energy_consumption()
+        solution_dict["num_used_relays"] = solution.objectives[0]
+        solution_dict["energy_consumption"] = solution.objectives[1]
         solution_dict["parent"] = NoIndent(network.parent)
         solution_dict["num_childs"] = NoIndent(network.num_childs)
         solution_dict["hop"] = network.max_depth
@@ -138,8 +138,8 @@ def save_results(pareto_front, solutions, best_mr, out_dir, visualization=False)
         solution_dict = {}
         network = solution.decode()
         solution_dict["chromosome"] = NoIndent(list(solution.chromosome))
-        solution_dict["num_used_relays"] = network.num_used_relays
-        solution_dict["energy_consumption"] = network.calc_max_energy_consumption()
+        solution_dict["num_used_relays"] = solution.objectives[0]
+        solution_dict["energy_consumption"] = solution.objectives[1]
         solution_dict["parent"] = NoIndent(network.parent)
         solution_dict["num_childs"] = NoIndent(network.num_childs)
         solution_dict["hop"] = network.max_depth
@@ -164,7 +164,3 @@ def save_results(pareto_front, solutions, best_mr, out_dir, visualization=False)
         visualize_solutions(solutions, '{}/solutions.png'.format(out_dir),
             title='solution-front', show=False)
 
-        gifexp = os.path.join(out_dir, 'solutions-gen-*.png')
-        gifname = os.path.join(out_dir, 'solutions.gif')
-        make_gif(gifexp, gifname)
-        remove_file(gifexp)

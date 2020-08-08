@@ -209,13 +209,13 @@ def save_history_as_gif(history: History,
     ymax = -float('inf')
     for gen, data in enumerate(history.history):
         xmin = min(xmin, min(
-            [solution[0] for solution in data['pareto_front'] + data['solutions']]))
+            [solution[0] for solution in (data['pareto_front'] + data['solutions']) if solution[0] != -float('inf')]))
         xmax = max(xmax, max(
-            [solution[0] for solution in data['pareto_front'] + data['solutions']]))
+            [solution[0] for solution in (data['pareto_front'] + data['solutions']) if solution[0] != float('inf')]))
         ymin = min(ymin, min(
-            [solution[1] for solution in data['pareto_front'] + data['solutions']]))
-        ymax = min(ymax, max(
-            [solution[1] for solution in data['pareto_front'] + data['solutions']]))
+            [solution[1] for solution in (data['pareto_front'] + data['solutions']) if solution[1] != -float('inf')]))
+        ymax = max(ymax, max(
+            [solution[1] for solution in (data['pareto_front'] + data['solutions']) if solution[1] != float('inf')]))
 
     if referenced_points is not None:
         if isinstance(referenced_points, np.ndarray):
@@ -235,6 +235,8 @@ def save_history_as_gif(history: History,
                 [solution[1] for solution in referenced_points]))
         else:
             raise ValueError("Unknow referenced_points")
+    
+    xmin, xmax, ymin, ymax = xmin * 0.95, xmax * 1.05, ymin * 0.95, ymax * 1.05 
 
     for gen, data in enumerate(history.history):
         if gen_filter(gen):

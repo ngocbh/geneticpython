@@ -50,7 +50,7 @@ class WusnProblem():
 
         for rl in inp.relays:
             for sn in inp.sensors:
-                if distance(rl, sn) <= inp.radius:
+                if distance(rl, sn) <= 2*inp.radius:
                     u, v = point2idx[rl], point2idx[sn]
                     edges[u].append(v)
                     edges[v].append(u)
@@ -64,7 +64,7 @@ class WusnProblem():
         if multi_hop:
             for sn1 in inp.sensors:
                 for sn2 in inp.sensors:
-                    if distance(sn1, sn2) <= inp.radius:
+                    if distance(sn1, sn2) <= 2*inp.radius:
                         u, v = point2idx[sn1], point2idx[sn2]
                         edges[u].append(v)
                         edges[v].append(u)
