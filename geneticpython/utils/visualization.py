@@ -236,7 +236,10 @@ def save_history_as_gif(history: History,
         else:
             raise ValueError("Unknow referenced_points")
     
-    xmin, xmax, ymin, ymax = xmin * 0.95, xmax * 1.05, ymin * 0.95, ymax * 1.05 
+    xmin = xmin - 0.05 * (xmax - xmin)
+    xmax = xmax + 0.05 * (xmax - xmin)
+    ymin = ymin - 0.05 * (ymax - ymin)
+    ymax = ymax + 0.05 * (ymax - ymin)
     xlim = [xmin, xmax] if abs(xmin) != float('inf') and abs(xmax) != float('inf') else None
     ylim = [ymin, ymax] if abs(ymin) != float('inf') and abs(ymax) != float('inf') else None
     

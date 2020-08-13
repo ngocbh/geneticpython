@@ -1,13 +1,12 @@
+from geneticpython.utils.visualization import plot_single_objective_history
+from geneticpython.core.operators import RouletteWheelSelection, UniformCrossover, FlipBitMutation, RouletteWheelReplacement
+from geneticpython import Population, GAEngine
+from geneticpython.core.individual import BinaryIndividual
+from collections import namedtuple
 import sys
 import os
 WORKING_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(WORKING_DIR, '../../../geneticpython'))
 
-from collections import namedtuple
-from geneticpython.core.individual import BinaryIndividual
-from geneticpython import Population, GAEngine
-from geneticpython.core.operators import RouletteWheelSelection, UniformCrossover, FlipBitMutation, RouletteWheelReplacement
-from geneticpython.utils.visualization import plot_single_objective_history
 
 Item = namedtuple("Item", ['index', 'value', 'weight'])
 
@@ -50,6 +49,7 @@ engine = GAEngine(population, selection=selection,
                   mutation=mutation,
                   replacement=replacement)
 
+
 @engine.maximize_objective
 def fitness(indv):
     global prob
@@ -68,8 +68,9 @@ def fitness(indv):
 
 
 # engine.create_seed(seed)
-history = engine.run(generations=1000)
+history = engine.run(generations=300)
 ans = engine.get_best_indv()
 print(ans)
 # print(engine.population)
 plot_single_objective_history({'geneticpython': history})
+

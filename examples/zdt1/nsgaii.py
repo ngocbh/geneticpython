@@ -1,17 +1,15 @@
-import os
-import sys
-WORKING_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(WORKING_DIR, '../../../geneticpython'))
-
-import matplotlib.pyplot as plt
-import numpy as np
-
+from geneticpython.utils.visualization import visualize_fronts, save_history_as_gif
+from geneticpython.core.individual import FloatIndividual
+from geneticpython import Population, NSGAIIEngine
 from geneticpython.core.operators import TournamentSelection,\
     SBXCrossover, \
     PolynomialMutation
-from geneticpython import Population, NSGAIIEngine
-from geneticpython.core.individual import FloatIndividual
-from geneticpython.utils.visualization import visualize_fronts, save_history_as_gif
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import sys
+WORKING_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 class ZDT1Individual(FloatIndividual):
 
@@ -60,7 +58,7 @@ def objective2(indv):
     return h * g
 
 
-history = engine.run(generations=100)
+history = engine.run(generations=200)
 # print(history.history)
 
 pareto_front = engine.get_pareto_front()
@@ -69,9 +67,11 @@ pareto_front = engine.get_pareto_front()
 def read_reference_points(filepath: str):
     return np.loadtxt(filepath)
 
-referenced_points=read_reference_points(
+
+referenced_points = read_reference_points(
     os.path.join(WORKING_DIR, 'data/ZDT1.pf'))
 
-save_history_as_gif(history, referenced_points=referenced_points, gen_filter=lambda x : (x % 1 == 0))
+save_history_as_gif(history, referenced_points=referenced_points,
+                    gen_filter=lambda x: (x % 1 == 0))
 print(len(pareto_front))
 visualize_fronts({'nsgaii': pareto_front}, referenced_points=referenced_points)
