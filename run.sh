@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 cd examples/wusn
-python run.sh | tee logs.txt
+python run.py | tee logs.txt

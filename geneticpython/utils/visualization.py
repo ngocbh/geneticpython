@@ -208,14 +208,14 @@ def save_history_as_gif(history: History,
     ymin = float('inf')
     ymax = -float('inf')
     for gen, data in enumerate(history.history):
-        xmin = min(xmin, min(
-            [solution[0] for solution in (data['pareto_front'] + data['solutions']) if solution[0] != -float('inf')]))
-        xmax = max(xmax, max(
-            [solution[0] for solution in (data['pareto_front'] + data['solutions']) if solution[0] != float('inf')]))
-        ymin = min(ymin, min(
-            [solution[1] for solution in (data['pareto_front'] + data['solutions']) if solution[1] != -float('inf')]))
-        ymax = max(ymax, max(
-            [solution[1] for solution in (data['pareto_front'] + data['solutions']) if solution[1] != float('inf')]))
+        xmin = min( [xmin] + 
+            [solution[0] for solution in (data['pareto_front'] + data['solutions']) if solution[0] != -float('inf')])
+        xmax = max( [xmax] +
+            [solution[0] for solution in (data['pareto_front'] + data['solutions']) if solution[0] != float('inf')])
+        ymin = min( [ymin] +
+            [solution[1] for solution in (data['pareto_front'] + data['solutions']) if solution[1] != -float('inf')])
+        ymax = max( [ymax] +
+            [solution[1] for solution in (data['pareto_front'] + data['solutions']) if solution[1] != float('inf')])
 
     if referenced_points is not None:
         if isinstance(referenced_points, np.ndarray):
@@ -237,7 +237,9 @@ def save_history_as_gif(history: History,
             raise ValueError("Unknow referenced_points")
     
     xmin, xmax, ymin, ymax = xmin * 0.95, xmax * 1.05, ymin * 0.95, ymax * 1.05 
-
+    xlim = [xmin, xmax] if abs(xmin) != float('inf') and abs(xmax) != float('inf') else None
+    ylim = [ymin, ymax] if abs(ymin) != float('inf') and abs(ymax) != float('inf') else None
+    
     for gen, data in enumerate(history.history):
         if gen_filter(gen):
             gen_str = (3 - len(str(gen))) * '0' + str(gen)
@@ -245,7 +247,7 @@ def save_history_as_gif(history: History,
             filepath = os.path.join(out_dir, f'{title}-gen-{gen_str}.png')
             visualize_solutions(data['pareto_front'], data['solutions'], title=gen_title, save=True,
                                 show=False, filepath=filepath, objective_name=objective_name,
-                                referenced_points=referenced_points, xlim=[xmin, xmax], ylim=[ymin, ymax])
+                                referenced_points=referenced_points, xlim=xlim, ylim=ylim)
     gifexp = os.path.join(out_dir, f'{title}-gen-*.png')
     gifname = os.path.join(out_dir, f'{title}.gif')
     __make_gif(gifexp, gifname)

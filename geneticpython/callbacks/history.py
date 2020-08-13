@@ -12,7 +12,7 @@ import os
 
 from .callback import Callback
 import copy
-
+import json
 
 class History(Callback):
     """Callback that records events into a `History` object.
@@ -37,3 +37,9 @@ class History(Callback):
         # Set the history attribute on the model after the epoch ends. This will
         # make sure that the state which is set is the latest one.
         self.engine.history = self
+
+    def dump(self, filepath):
+        with open(filepath, mode='w') as f:
+            history_json = json.dumps(self.history, indent=2)
+            f.write(history_json)
+
