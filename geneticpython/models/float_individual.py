@@ -5,8 +5,8 @@
 """
 from __future__ import absolute_import
 
-from .chromosome import FloatChromosome
-from .individual import Individual
+from geneticpython.core.individual.chromosome import FloatChromosome
+from geneticpython.core.individual import Individual
 
 
 class FloatIndividual(Individual):

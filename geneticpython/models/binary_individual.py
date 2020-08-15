@@ -5,9 +5,8 @@
 """
 from __future__ import absolute_import
 
-from .individual import Individual
-from .chromosome import IntChromosome
-from .solution import Solution
+from geneticpython.core.individual import Individual
+from geneticpython.core.individual.chromosome import IntChromosome
 
 
 class BinaryIndividual(Individual):

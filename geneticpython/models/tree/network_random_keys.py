@@ -5,14 +5,16 @@
 """
 from __future__ import absolute_import
 
-from .individual import Individual
-from .chromosome import FloatChromosome
+from geneticpython.core.individual import Individual, Solution
+from geneticpython.core.individual.chromosome import FloatChromosome
 from typing import Dict, List
+
+from .tree import Tree
 
 import numpy as np
 
 
-class Network():
+class Network(Tree):
 
     def __init__(self):
         pass
@@ -59,4 +61,3 @@ class NetworkRandomKeys(Individual):
 
 if __name__ == '__main__':
     pass
-

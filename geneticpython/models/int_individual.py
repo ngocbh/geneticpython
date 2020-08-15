@@ -5,8 +5,8 @@
 """
 from __future__ import absolute_import
 
-from .individual import Individual
-from .individual import IntChromosome
+from geneticpython.core.individual import Individual
+from geneticpython.core.individual.chromosome import IntChromosome
 
 class IntIndividual(Individual):
 

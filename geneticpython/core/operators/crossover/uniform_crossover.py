@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 from .crossover import Crossover
-from ...individual import BinaryIndividual
+from geneticpython.models.binary_individual import BinaryIndividual
 from copy import deepcopy
 from random import Random
 import random

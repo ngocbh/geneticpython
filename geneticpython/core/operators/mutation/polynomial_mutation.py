@@ -5,7 +5,7 @@
 """
 from __future__ import absolute_import
 
-from ...individual import FloatIndividual
+from geneticpython.models.float_individual import FloatIndividual
 from .mutation import Mutation
 from copy import deepcopy
 from random import Random

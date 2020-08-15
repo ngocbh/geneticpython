@@ -8,7 +8,3 @@ from __future__ import absolute_import
 from .solution import Solution, SimpleSolution
 from .individual import Individual
 from .chromosome import IntChromosome, FloatChromosome
-from .binary_individual import BinaryIndividual
-from .float_individual import FloatIndividual
-from .int_individual import IntIndividual
-from .network_random_keys import NetworkRandomKeys, Network

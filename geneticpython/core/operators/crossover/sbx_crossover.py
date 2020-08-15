@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 from .crossover import Crossover
-from ...individual import FloatIndividual
+from geneticpython.models.float_individual import FloatIndividual
 from copy import deepcopy
 from random import Random
 import random

@@ -5,7 +5,7 @@
 """
 from __future__ import absolute_import
 
-from ...individual import BinaryIndividual
+from geneticpython.models.binary_individual import BinaryIndividual
 from .mutation import Mutation
 from random import Random
 import random
