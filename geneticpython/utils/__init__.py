@@ -8,5 +8,5 @@ Description:
 
 from __future__ import absolute_import
 
-from .analyzers import *
-from .visualization import *
+from .validation import *
+from .noindent_encoder import *

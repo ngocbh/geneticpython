@@ -168,7 +168,7 @@ class NSGAIIEngine(MultiObjectiveEngine):
         self.population.individual_temp.nondominated_rank = None
         self.population.individual_temp.crowding_distance = None
         # init population
-        population = self.population.init_population(self.rand)
+        population = self.population.init_population(self.random_state)
 
         return population
 
@@ -184,7 +184,7 @@ class NSGAIIEngine(MultiObjectiveEngine):
             mating_population = self.selection.select(self.selection_size,
                                                       population=self.population.individuals,
                                                       comparator=self.crowded_comparator,
-                                                      rand=self.rand)
+                                                      random_state=self.random_state)
         except TypeError as err:
             raise TypeError(" {}\nSelection does not support nondominated comparator,\n \
                     TournamentSelection is recommended".format(err))
@@ -197,7 +197,7 @@ class NSGAIIEngine(MultiObjectiveEngine):
             new_population,
             comparator=NSGAIIEngine.crowded_comparator,
             sorted=True,
-            rand=self.rand)
+            random_state=self.random_state)
         return new_population
 
     def run(self, generations: int = None) -> History:

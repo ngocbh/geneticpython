@@ -10,10 +10,11 @@ from functools import wraps
 from typing import List, Union, Callable
 from tqdm.auto import tqdm
 
-from ..core.individual import Individual
-from ..core.population import Population
-from ..core.operators import Selection, Crossover, Mutation, Replacement
-from ..callbacks import Callback, History, CallbackList
+from geneticpython.core.individual import Individual
+from geneticpython.core.population import Population
+from geneticpython.core.operators import Selection, Crossover, Mutation, Replacement
+from geneticpython.callbacks import Callback, History, CallbackList
+from geneticpython.utils.validation import check_random_state
 
 import random
 import math
@@ -31,7 +32,7 @@ class GeneticEngine(ABC):
                  replacement: Replacement = None,
                  callbacks: CallbackList = None,
                  generations: int = None,
-                 random_state: int = None):
+                 random_state = None):
 
         self.population = population
         self.generations = generations
@@ -41,14 +42,8 @@ class GeneticEngine(ABC):
         self.replacement = replacement
         self.objective = objective
         self.objectives = objectives
-
         self.selection_size = selection_size or self.population.size
-
-        if random_state:
-            self.rand = random.Random(random_state)
-        else:
-            self.rand = random.Random()
-
+        self.random_state = check_random_state(random_state)
         self.callbacks = callbacks
         self.callbacks.set_engine(self)
         self.metrics = None
@@ -56,9 +51,6 @@ class GeneticEngine(ABC):
         self.stop_running = False
         self.coefficients = None
         self.coefficient = None
-
-    def create_seed(self, seed: int):
-        self.rand = random.Random(seed)
 
     def set_selection(self, selection: Selection):
         self.selection = selection
@@ -73,24 +65,24 @@ class GeneticEngine(ABC):
         self.replacement = replacement
 
     def do_initialization(self) -> List[Individual]:
-        population = self.population.init_population(rand=self.rand)
+        population = self.population.init_population(random_state=self.random_state)
         return population
 
     def do_selection(self) -> List[Individual]:
         return self.selection.select(self.selection_size,
                                      self.population,
-                                     rand=self.rand)
+                                     random_state=self.random_state)
 
     def do_reproduction(self, mating_population: List[Individual]) -> List[Individual]:
         childs = []
         for i in range(0, len(mating_population), 2):
             childs_temp = self.crossover.cross(father=mating_population[i],
                                                mother=mating_population[i+1],
-                                               rand=self.rand)
+                                               random_state=self.random_state)
             childs.extend(childs_temp)
 
         for i in range(len(childs)):
-            childs[i] = self.mutation.mutate(childs[i], rand=self.rand)
+            childs[i] = self.mutation.mutate(childs[i], random_state=self.random_state)
 
         return childs
 
@@ -100,7 +92,7 @@ class GeneticEngine(ABC):
     def do_replacement(self, new_population: List[Individual]) -> List[Individual]:
         return self.replacement.replace(self.population.size,
                                         new_population,
-                                        rand=self.rand)
+                                        random_sate=self.random_state)
 
     @abstractmethod
     def compute_objectives(self, population: List[Individual]) -> List[Individual]:

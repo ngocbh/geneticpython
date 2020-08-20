@@ -11,6 +11,7 @@ from tqdm.auto import tqdm
 from random import Random
 
 from .individual import Individual, SimpleSolution
+from geneticpython.utils.validation import check_random_state
 
 import random
 
@@ -20,7 +21,6 @@ class Population():
 
     def __init__(self, individual_temp: Individual, size: int, init_population: Callable[[], List[Individual]] = None):
         self.individual_temp = individual_temp
-        self.rand = random.Random()
         self.size = size
         self.init_population = init_population or self.init_population_randomly
         self.individuals = []
@@ -53,20 +53,15 @@ class Population():
         '''
         return len(self.individuals)
 
-    def create_seed(self, seed):
-        self.rand = random.Random(seed)
-
-    def set_rand(self, rand):
-        self.rand = rand
-
     def set_initialization(self, callback: Callable[[], List[Individual]]):
         self.init_population = callback
 
-    def init_population_randomly(self, rand: Random = Random()) -> List[Individual]:
+    def init_population_randomly(self, random_state=None) -> List[Individual]:
+        random_state = check_random_state(random_state)
         ret = []
         for _ in range(self.size):
             new_indiv = self.individual_temp.clone()
-            new_indiv.init(rand=rand)
+            new_indiv.init(random_state=random_state)
             ret.append(new_indiv)
         return ret
 
@@ -93,16 +88,9 @@ class Population():
 
     def register_initialization(self, fn):
         @wraps(fn)
-        def _fn_with_parameter_checked(rand: Random = Random()):
-            '''
-            A wrapper function for objective function with objective value check.
-            '''
-            # Check indv type.
-            if not isinstance(rand, Random):
-                raise TypeError('initialization must pass Random as argument')
-
+        def _fn_with_return_checked(random_state=None):
             # Check objective.
-            population = fn(rand)
+            population = fn(random_state)
             is_invalid = not isinstance(population, list) or not all(
                 isinstance(indv, Individual) for indv in population)
             if is_invalid:
@@ -112,7 +100,7 @@ class Population():
                 raise ValueError(msg)
             return population
 
-        self.init_population = _fn_with_parameter_checked
+        self.init_population = _fn_with_return_checked
 
 
 class Pareto():

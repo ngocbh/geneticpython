@@ -7,6 +7,8 @@ from __future__ import absolute_import
 
 from .crossover import Crossover
 from geneticpython.models.binary_individual import BinaryIndividual
+from geneticpython.utils.validation import check_random_state
+
 from copy import deepcopy
 from random import Random
 import random
@@ -21,14 +23,15 @@ class UniformCrossover(Crossover):
             raise ValueError('Invalid genome exchange probability')
         self.pe = pe
 
-    def cross(self, father : BinaryIndividual, mother : BinaryIndividual, rand : Random = Random()):
+    def cross(self, father : BinaryIndividual, mother : BinaryIndividual, random_state=None):
         ''' Cross chromsomes of parent using uniform crossover method.
         :param population: Population where the selection operation occurs.
         :type population: :obj:`gaft.components.Population`
         :return: Selected parents (a father and a mother)
         :rtype: list of :obj:`gaft.components.IndividualBase`
         '''
-        do_cross = True if rand.random() <= self.pc else False
+        random_state = check_random_state(random_state)
+        do_cross = True if random_state.random() <= self.pc else False
 
         if not do_cross:
             return father.clone(), mother.clone()
@@ -39,7 +42,7 @@ class UniformCrossover(Crossover):
 
         for i in range(father.chromosome.length):
             g1, g2 = chrom1[i], chrom2[i]
-            do_exchange = True if rand.random() <= self.pe else False
+            do_exchange = True if random_state.random() <= self.pe else False
             if do_exchange:
                 chrom1[i], chrom2[i] = g2, g1
 

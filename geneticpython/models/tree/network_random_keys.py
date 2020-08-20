@@ -7,29 +7,14 @@ from __future__ import absolute_import
 
 from geneticpython.core.individual import Individual, Solution
 from geneticpython.core.individual.chromosome import FloatChromosome
-from typing import Dict, List
+from typing import Dict, List, NewType, Tuple, Union
 
-from .tree import Tree
+from .tree import KruskalTree
 
 import numpy as np
 
-
-class Network(Tree):
-
-    def __init__(self):
-        pass
-
-    def init_solution(self):
-        raise NotImplementedError
-
-    def try_add_edge(self, i: int):
-        raise NotImplementedError
-
-    def add_edge(self, i: int):
-        raise NotImplementedError
-
-    def repair(self):
-        pass
+EdgeList = NewType(
+    "EdgeList", Union[List[Union[List[int], Tuple[int]]], Tuple[Union[List[int], Tuple[int]]]])
 
 
 class NetworkRandomKeys(Individual):
@@ -40,24 +25,34 @@ class NetworkRandomKeys(Individual):
         Evolutionary computation. 10. 75-97. 10.1162/106365602317301781. 
     """
 
-    def __init__(self, length, network: Network):
-        chromosome = FloatChromosome(length, [0, 1])
+    def __init__(self, edge_list: EdgeList, network: KruskalTree):
+        if any(len(edge) != 2 for edge in edge_list):
+            raise ValueError(
+                "Each edge has to be a list or tuple containing 2 vertices. \
+                For example: for two edges: 1-2, 2-3 --> [(1,2), (2,3)}]")
+
+        edges_size = len(edge_list)
+        chromosome = FloatChromosome(edges_size, [0, 1])
         super(NetworkRandomKeys, self).__init__(chromosome)
         self.network = network
+        self.edge_list = edge_list
 
-    def decode(self):
+    def decode(self) -> KruskalTree:
         genes = np.copy(self.chromosome.genes)
         order = np.argsort(-genes)
 
-        self.network.init_solution()
+        self.network.initialize()
 
         for i in order:
-            if self.network.try_add_edge(i):
-                self.network.add_edge(i)
+            u, v = self.edge_list[i]
+            self.network.add_edge(u, v)
 
         self.network.repair()
         return self.network
-
+    
+    @classmethod
+    def encode(cls, solution : Solution):
+        raise NotImplementedError("NetworkRandomKeys does not support encoding method")
 
 if __name__ == '__main__':
     pass

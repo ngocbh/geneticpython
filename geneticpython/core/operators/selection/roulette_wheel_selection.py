@@ -7,12 +7,11 @@ from __future__ import absolute_import
 
 from .selection import Selection
 from ...individual import Individual
+from geneticpython.utils.validation import check_random_state
 
 from typing import List, Union
 from bisect import bisect_right
 from itertools import accumulate
-import random
-from random import Random
 
 
 class RouletteWheelSelection(Selection):
@@ -21,9 +20,9 @@ class RouletteWheelSelection(Selection):
 
     def select(self, size: int,
                population: List[Individual],
-               rand: Random = Random(),
-               is_unique=False) -> List[Individual]:
-
+               is_unique=False,
+               random_state=None) -> List[Individual]:
+        random_state = check_random_state(random_state)
         fits = [float(indv._objective) for indv in population]
         max_fit = max(fits)
         fits = [(max_fit - e_fit + 1) for e_fit in fits]
@@ -35,12 +34,12 @@ class RouletteWheelSelection(Selection):
         selected_indvs = []
 
         for _ in range(size):
-            idx = bisect_right(wheel, rand.random())
+            idx = bisect_right(wheel, random_state.random())
             while is_unique and not selected[idx] and idx > -len(selected):
                 idx -= 1
 
             if idx == -len(selected):
-                idx = rand.randint(0, len(selected)-1)
+                idx = random_state.randint(0, len(selected)-1)
 
             selected_indvs.append(population[idx])
             selected[idx] = False

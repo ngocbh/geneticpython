@@ -1,6 +1,7 @@
-from geneticpython.utils.visualization import visualize_fronts, save_history_as_gif
-from geneticpython.core.individual import FloatIndividual
+from geneticpython.tools.visualization import visualize_fronts, save_history_as_gif
+from geneticpython.models import FloatIndividual
 from geneticpython import Population, NSGAIIEngine
+from geneticpython import Callback
 from geneticpython.core.operators import TournamentSelection,\
     SBXCrossover, \
     PolynomialMutation
@@ -17,6 +18,21 @@ class ZDT1Individual(FloatIndividual):
         self.number_of_variables = number_of_variables
         super(ZDT1Individual, self).__init__(number_of_variables, [0, 1])
 
+class MyCallback(Callback):
+    def on_generation_begin(self, gen, logs=None):
+        print("on_generation_begin", gen)
+
+    def on_init_population_begin(self, logs=None):
+        print("on_init_population_begin")
+
+    def on_replacement_begin(self, gen, logs=None):
+        print("on_replacement_begin", gen)
+
+    def on_selection_begin(self, gen, logs=None):
+        print("on_selection_begin", gen)
+
+    def on_reproduction_begin(self, gen, logs=None):
+        print("on_reproduction_begin", gen)
 
 seed = 13
 pop_size = 100
@@ -31,6 +47,7 @@ engine = NSGAIIEngine(population, selection=selection,
                       crossover=crossover,
                       mutation=mutation,
                       selection_size=100,
+                      callbacks=[MyCallback()],
                       random_state=1)
 
 

@@ -11,10 +11,18 @@ SimpleSolution = NewType("SimpleSolution", Union[ List[Union[int, float]], Tuple
 
 class Solution:
     def __init__(self):
+        self._is_valid = None
+
+    def initialize(self):
+        """
+            renew solution, prepair for new solution
+        """
         pass
-    
-    @property
-    def is_valid(self):
+
+    def repair(self):
+        pass
+
+    def check_validity(self):
         """
             check if this solution is valid
         :return true if valid

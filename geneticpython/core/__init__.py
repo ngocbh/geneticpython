@@ -8,6 +8,6 @@ Description:
 
 from __future__ import absolute_import
 
-from .population import *
 from .individual import *
 from .operators import *
+from .population import *

@@ -7,6 +7,8 @@ from __future__ import absolute_import
 
 from .crossover import Crossover
 from geneticpython.models.float_individual import FloatIndividual
+from geneticpython.utils.validation import check_random_state
+
 from copy import deepcopy
 from random import Random
 import random
@@ -40,8 +42,9 @@ class SBXCrossover(Crossover):
             raise ValueError('Invalid distribution index (must be non-negative)')
         self.distribution_index = distribution_index
 
-    def cross(self, father : FloatIndividual, mother : FloatIndividual, rand : Random = Random()):
-        do_crossover = True if rand.random() <= self.pc else False
+    def cross(self, father : FloatIndividual, mother : FloatIndividual, random_state=None):
+        random_state = check_random_state(random_state)
+        do_crossover = True if random_state.random() <= self.pc else False
 
         if not do_crossover:
             return father.clone(), mother.clone()
@@ -54,7 +57,7 @@ class SBXCrossover(Crossover):
         y2 = deepcopy(mother.chromosome.genes)
         
         cross_element = np.full(length, True)
-        cross_element[np.array([rand.random() for _ in range(length)]) > self.pc] = False
+        cross_element[random_state.random(length) > self.pc] = False
         cross_element[np.abs(y1 - y2) <= self.__EPS] = False
 
         # ensure chromo1 < chromo2
@@ -62,7 +65,7 @@ class SBXCrossover(Crossover):
             if y1[i] > y2[i]:
                 y1[i], y2[i] = y2[i], y1[i]
         
-        u = np.array([rand.random() for _ in range(length)])
+        u = random_state.random(length)
 
         def calc_betaq(beta):
             alpha = 2.0 - np.power(beta, -(self.distribution_index + 1.0))
@@ -86,7 +89,7 @@ class SBXCrossover(Crossover):
         c2 = 0.5 * ((y1 + y2) + betaq * delta)
 
         # do randomly a swap of variables
-        b = np.array([rand.random() for _ in range(length)]) <= 0.5
+        b = random_state.random(length) <= 0.5
         val = np.copy(c1[b])
         c1[b] = c2[b]
         c2[b] = val

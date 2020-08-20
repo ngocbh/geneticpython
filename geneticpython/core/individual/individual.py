@@ -7,13 +7,12 @@ from __future__ import absolute_import
 
 from .solution import Solution
 from .chromosome import Chromosome, IntChromosome
+from geneticpython.utils.validation import check_random_state
 
 from typing import List, Union, Callable, Tuple, NewType
 from copy import deepcopy
-from random import Random
 
 import numpy as np
-import random
 import inspect
 
 
@@ -27,14 +26,13 @@ class Individual:
         if not, gene_domains will extend the last gene domain to the rest. 
     """
 
-    def __init__(self, chromosome: Chromosome, solution: Solution = None, rand: Random = Random()):
+    def __init__(self, chromosome: Chromosome, solution: Solution = None):
         """
             Initialization for Individual
             :init chromosome
         """
         self.chromosome = chromosome
         self.solution = solution
-        self.rand = rand
         self._objective = None
         self._coefficient = None
         self._objectives = None
@@ -52,11 +50,8 @@ class Individual:
         else:
             return str(self.chromosome) + ' -> ' + str(self.objectives) + '\n'
 
-    def create_seed(self, seed):
-        self.rand = random.Random(seed)
-
-    def set_rand(self, rand):
-        self.rand = rand
+    def set_random_state(self, random_state):
+        self.random_state = random_state
 
     def clone(self):
         """
@@ -65,7 +60,8 @@ class Individual:
         indiv = deepcopy(self)
         return indiv
 
-    def init(self, chromosome: Chromosome = None, solution: Solution = None, rand=random.Random()):
+    def init(self, chromosome: Chromosome = None, solution: Solution = None, random_state=None):
+        random_state = check_random_state(random_state or self.random_state)
         if chromosome != None:
             self.chromosome = chromosome
         elif solution != None:
@@ -73,7 +69,7 @@ class Individual:
             self.chromosome = self.encode(solution)
         else:
             # initialize randomly
-            self.chromosome.init_genes(rand=rand)
+            self.chromosome.init_genes(random_state=random_state)
 
     def update_genes(self, genes: Union[np.ndarray, tuple, list]):
         self.chromosome.init_genes(genes=genes)
@@ -102,7 +98,8 @@ class Individual:
         """
         raise NotImplementedError
 
-    def encode(self, solution):
+    @classmethod
+    def encode(cls, solution):
         """
             Encode from solution to chromosome
 

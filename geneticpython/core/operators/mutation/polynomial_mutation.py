@@ -6,6 +6,7 @@
 from __future__ import absolute_import
 
 from geneticpython.models.float_individual import FloatIndividual
+from geneticpython.utils.validation import check_random_state
 from .mutation import Mutation
 from copy import deepcopy
 from random import Random
@@ -24,8 +25,8 @@ class PolynomialMutation(Mutation):
         self.distribution_index = distribution_index
         
 
-    def mutate(self, indv: FloatIndividual, rand : Random = Random()):
-
+    def mutate(self, indv: FloatIndividual, random_state=None):
+        random_state = check_random_state(random_state)
         ret_indv = indv.clone()
 
         genes = np.copy(ret_indv.chromosome.genes)
@@ -33,7 +34,7 @@ class PolynomialMutation(Mutation):
 
         xl, xu = ret_indv.chromosome.lower_bound, ret_indv.chromosome.upper_bound
         
-        do_mutation = np.array([rand.random() for _ in range(length)]) < self.pm
+        do_mutation = random_state.random(length) < self.pm
         genes = genes[do_mutation]
         xl = xl[do_mutation]
         xu = xu[do_mutation]
@@ -43,7 +44,7 @@ class PolynomialMutation(Mutation):
 
         mut_pow = 1.0 / (self.distribution_index + 1.0)
 
-        u = np.array([rand.random() for _ in range(genes.shape[0])])
+        u = random_state.random(genes.shape[0])
 
         mask = u <= 0.5
         mask_not = np.logical_not(mask)
@@ -72,12 +73,6 @@ class PolynomialMutation(Mutation):
         ret_indv.update_genes(ret_genes)
 
         return ret_indv
-
-
-
-
-
-
 
 if __name__ == '__main__':
     pass

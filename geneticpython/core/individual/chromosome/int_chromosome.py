@@ -6,6 +6,7 @@
 from __future__ import absolute_import
 
 from .chromosome import Chromosome
+from geneticpython.utils.validation import check_random_state
 
 import numpy as np
 
@@ -19,7 +20,7 @@ class IntChromosome(Chromosome):
     def is_valid(self):
         pass
 
-    def init_genes(self, genes=None, rand=random.Random()):
+    def init_genes(self, genes=None, random_state=None):
         if genes != None:
             if (isinstance(genes,(tuple,list)) and len(genes) != self.length):
                 self.genes = np.array(genes)
@@ -28,8 +29,9 @@ class IntChromosome(Chromosome):
             else:
                 raise Exception("genes has to be an instance of tuple or list and has the same length as chromosome")
         else:   
+            random_state = check_random_state(random_state)
             self.genes = np.array([
-                    rand.randint(int(self.lower_bound[i]), int(self.upper_bound[i])) for i in range(self.length)
+                    random_state.randint(int(self.lower_bound[i]), int(self.upper_bound[i])) for i in range(self.length)
                 ])
         
 

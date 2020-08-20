@@ -7,6 +7,8 @@ from __future__ import absolute_import
 
 from geneticpython.models.binary_individual import BinaryIndividual
 from .mutation import Mutation
+from geneticpython.utils.validation import check_random_state
+
 from random import Random
 import random
 
@@ -24,14 +26,14 @@ class FlipBitMutation(Mutation):
             raise ValueError('Invalid mutation probability')
         self.pe = pe
 
-    def mutate(self, individual: BinaryIndividual, rand : Random = Random()):
-        do_mutation = True if rand.random() <= self.pm else False
+    def mutate(self, individual: BinaryIndividual, random_state=None):
+        do_mutation = True if random_state.random() <= self.pm else False
 
         ret_individual = individual.clone()
 
         if do_mutation:
             for i, genome in enumerate(ret_individual.chromosome.genes):
-                flip = True if rand.random() <= self.pe else False
+                flip = True if random_state.random() <= self.pe else False
                 if flip:
                     ret_individual.chromosome.genes[i] = genome^1
 

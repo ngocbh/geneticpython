@@ -7,14 +7,12 @@ from __future__ import absolute_import
 
 from .selection import Selection
 from ...individual import Individual
+from geneticpython.utils.validation import check_random_state
 
 from typing import List, Union, Callable
 from bisect import bisect_right
 from itertools import accumulate
 from functools import cmp_to_key
-from random import Random
-
-import random
 
 
 class TournamentSelection(Selection):
@@ -43,8 +41,9 @@ class TournamentSelection(Selection):
     def select(self, size: int,
                population: List[Individual],
                comparator: Callable[[Individual, Individual], bool] = None,
-               rand: Random = Random()) -> List[Individual]:
-
+               random_state=None) -> List[Individual]:
+        
+        random_state = check_random_state(random_state)
         if not comparator:
             comparator = self.single_objective_comparator
 
@@ -57,16 +56,17 @@ class TournamentSelection(Selection):
 
         for _ in range(size):
             chosen = None
-            competitors = rand.sample(population, self.tournament_size)
+            competitors = random_state.choice(population, self.tournament_size)
+            competitors = competitors.tolist()
             competitors.sort(key=cmp_to_key(comparator))
 
             for i in range(len(competitors)):
-                if rand.uniform(0, 1) <= self.p:
+                if random_state.uniform(0, 1) <= self.p:
                     chosen = competitors[i]
                     break
 
             if not chosen:
-                chosen = competitors[rand.randint(0, len(competitors)-1)]
+                chosen = competitors[random_state.randint(0, len(competitors)-1)]
 
             selected_indvs.append(chosen)
 

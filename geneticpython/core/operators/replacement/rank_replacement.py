@@ -7,14 +7,13 @@ from __future__ import absolute_import
 
 from .replacement import Replacement
 from ...individual import Individual
+from geneticpython.utils.validation import check_random_state
 
 from typing import List, Union, Callable
 from bisect import bisect_right
 from itertools import accumulate
 from functools import cmp_to_key
-from random import Random
 
-import random
 import copy
 
 
@@ -32,8 +31,8 @@ class RankReplacement(Replacement):
     def replace(self, size: int, population: List[Individual],
                 comparator: Callable[[Individual, Individual], bool] = None,
                 sorted: bool = False,
-                rand: Random = Random()) -> List[Individual]:
-
+                random_state=None) -> List[Individual]:
+        # random_state = check_random_state(random_state)
         if not sorted:
             # sort
             if not comparator:

@@ -72,7 +72,7 @@ class Chromosome():
     def is_valid(self):
         pass
 
-    def init_genes(self, genes=None, rand=None):
+    def init_genes(self, genes=None, random_state=None):
         raise NotImplementedError
         
 

@@ -5,11 +5,12 @@
 """
 from __future__ import absolute_import
 from abc import ABC, abstractmethod
+from geneticpython.core.individual import Individual
 
 class Mutation:
     def __init__(self):
         pass
 
     @abstractmethod
-    def mutate(self):
+    def mutate(self, indv : Individual, random_state=None):
         raise NotImplementedError
