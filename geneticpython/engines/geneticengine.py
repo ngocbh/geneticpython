@@ -64,6 +64,9 @@ class GeneticEngine(ABC):
     def set_replacement(self, replacement: Replacement):
         self.replacement = replacement
 
+    def summary(self):
+        pass
+
     def do_initialization(self) -> List[Individual]:
         population = self.population.init_population(random_state=self.random_state)
         return population
@@ -92,7 +95,7 @@ class GeneticEngine(ABC):
     def do_replacement(self, new_population: List[Individual]) -> List[Individual]:
         return self.replacement.replace(self.population.size,
                                         new_population,
-                                        random_sate=self.random_state)
+                                        random_state=self.random_state)
 
     @abstractmethod
     def compute_objectives(self, population: List[Individual]) -> List[Individual]:

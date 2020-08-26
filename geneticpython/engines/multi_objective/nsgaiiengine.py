@@ -12,7 +12,8 @@ from tqdm.auto import tqdm
 
 from ...core.individual import Individual
 from ...core.population import Population, Pareto
-from ...core.operators import Selection, Crossover, Mutation, Replacement, RankReplacement
+from ...core.operators import Selection, Crossover, Mutation
+from ...core.operators import Replacement, RankReplacement, TournamentSelection
 from ..geneticengine import GeneticEngine
 from ...callbacks import CallbackList, Callback, History
 from .multi_objective_engine import MultiObjectiveEngine, is_dominated
@@ -36,6 +37,7 @@ class NSGAIIEngine(MultiObjectiveEngine):
                  random_state: int = None):
 
         replacement = RankReplacement()
+        selection = selection or TournamentSelection(2)
 
         super(NSGAIIEngine, self).__init__(population=population,
                                            objectives=objectives,

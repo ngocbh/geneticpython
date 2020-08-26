@@ -14,8 +14,7 @@ def check_random_state(seed):
         Otherwise raise ValueError.
     """
     if seed is None or seed is np.random:
-        print(1)
-        return np.random.mtrand._rand
+        return np.random.RandomState()
     if isinstance(seed, int):
         return np.random.RandomState(seed)
     if isinstance(seed, np.random.RandomState):

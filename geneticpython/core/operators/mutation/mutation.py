@@ -8,9 +8,11 @@ from abc import ABC, abstractmethod
 from geneticpython.core.individual import Individual
 
 class Mutation:
-    def __init__(self):
-        pass
+    def __init__(self, pm : float):
+        if pm <= 0.0 or pm > 1.0:
+            raise ValueError('Invalid mutation probability')
+        self.pm = pm
 
     @abstractmethod
-    def mutate(self, indv : Individual, random_state=None):
+    def mutate(self, indv : Individual, random_state=None) -> Individual:
         raise NotImplementedError

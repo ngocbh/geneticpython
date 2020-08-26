@@ -15,14 +15,11 @@ import numpy as np
 
 class PolynomialMutation(Mutation):
     
-    def __init__(self, pm: float = None, distribution_index: float = 20):
-        if pm <= 0.0 or pm > 1.0:
-            raise ValueError('Invalid mutation probability')
-        self.pm = pm
-
+    def __init__(self, pm: float, distribution_index: float = 20):
         if distribution_index < 0: 
             raise ValueError('Invalid distribution index (must be non-negative)')
         self.distribution_index = distribution_index
+        super(PolynomialMutation, self).__init__(pm=pm)
         
 
     def mutate(self, indv: FloatIndividual, random_state=None):

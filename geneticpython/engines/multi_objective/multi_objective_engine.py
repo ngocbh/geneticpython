@@ -81,7 +81,8 @@ class MultiObjectiveEngine(GeneticEngine):
     def compute_objectives(self, population: List[Individual]) -> List[Individual]:
         ret = list()
         # compute objectives
-        for indv in population:
+        for i in range(len(population)):
+            indv = population[i]
             if self.objectives is None:
                 raise ValueError(
                     f"Engine has no registered objective functions")

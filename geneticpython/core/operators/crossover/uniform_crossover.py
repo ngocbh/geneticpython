@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 from .crossover import Crossover
-from geneticpython.models.binary_individual import BinaryIndividual
+from geneticpython.core.individual import Individual
 from geneticpython.utils.validation import check_random_state
 
 from copy import deepcopy
@@ -15,15 +15,12 @@ import random
 
 class UniformCrossover(Crossover):
     def __init__(self, pc, pe=0.5):
-        if pc <= 0.0 or pc > 1.0:
-            raise ValueError('Invalid crossover probability')
-        self.pc = pc
-
         if pe <= 0.0 or pe > 1.0:
             raise ValueError('Invalid genome exchange probability')
         self.pe = pe
+        super(UniformCrossover, self).__init__(pc=pc)
 
-    def cross(self, father : BinaryIndividual, mother : BinaryIndividual, random_state=None):
+    def cross(self, father : Individual, mother : Individual, random_state=None):
         ''' Cross chromsomes of parent using uniform crossover method.
         :param population: Population where the selection operation occurs.
         :type population: :obj:`gaft.components.Population`

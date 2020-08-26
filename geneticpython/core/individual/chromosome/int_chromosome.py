@@ -31,7 +31,7 @@ class IntChromosome(Chromosome):
         else:   
             random_state = check_random_state(random_state)
             self.genes = np.array([
-                    random_state.randint(int(self.lower_bound[i]), int(self.upper_bound[i])) for i in range(self.length)
+                    random_state.random_integers(int(self.lower_bound[i]), int(self.upper_bound[i])) for i in range(self.length)
                 ])
         
 

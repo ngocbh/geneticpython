@@ -15,10 +15,7 @@ import random
 
 class FlipBitMutation(Mutation):
     def __init__(self, pm : float, pe : float = None):
-        if pm <= 0.0 or pm > 1.0:
-            raise ValueError('Invalid mutation probability')
-        self.pm = pm
-
+        super(FlipBitMutation, self).__init__(pm=pm)
         if pe is None:
             pe = pm
             

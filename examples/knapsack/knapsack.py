@@ -68,7 +68,7 @@ def fitness(indv):
 
 
 # engine.create_seed(seed)
-history = engine.run(generations=300)
+history = engine.run(generations=1000)
 ans = engine.get_best_indv()
 print(ans)
 # print(engine.population)

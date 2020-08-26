@@ -37,6 +37,7 @@ class Individual:
         self._coefficient = None
         self._objectives = None
         self._coefficients = None
+        self.random_state = None
 
     def __str__(self):
         if self._objective:
@@ -98,8 +99,7 @@ class Individual:
         """
         raise NotImplementedError
 
-    @classmethod
-    def encode(cls, solution):
+    def encode(self, solution : Solution):
         """
             Encode from solution to chromosome
 
