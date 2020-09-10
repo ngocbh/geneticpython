@@ -11,7 +11,7 @@ from geneticpython.core.individual import Individual
 
 class Crossover:
     def __init__(self, pc : float):
-        if pc <= 0.0 or pc > 1.0:
+        if pc < 0.0 or pc > 1.0:
             raise ValueError('Invalid crossover probability')
         self.pc = pc
 

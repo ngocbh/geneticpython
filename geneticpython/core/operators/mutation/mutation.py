@@ -9,7 +9,7 @@ from geneticpython.core.individual import Individual
 
 class Mutation:
     def __init__(self, pm : float):
-        if pm <= 0.0 or pm > 1.0:
+        if pm < 0.0 or pm > 1.0:
             raise ValueError('Invalid mutation probability')
         self.pm = pm
 

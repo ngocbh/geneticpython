@@ -19,7 +19,12 @@ class ProgbarLogger(Callback):
         self.metrics = metrics or {}
         self.default_metrics = default_metrics
 
+    def on_init_population_begin(self, logs=None):
+        print('Initializing...', end='', flush=True)
+
     def on_init_population_end(self, logs=None):
+        print('Finished Initialization!')
+        print('Beginning genetic process...', flush=True)
         self.progbar = tqdm(range(self.engine.generations))
 
     def on_generation_end(self, gen, logs=None):
@@ -29,6 +34,7 @@ class ProgbarLogger(Callback):
 
     def on_running_end(self, logs=None):
         self.progbar.close()
+        print('Done!')
 
     def _update_metrics(self):
         self.metrics = self.metrics or OrderedDict()

@@ -10,7 +10,7 @@ from __future__ import absolute_import
 
 from typing import List, Union, Dict, Tuple
 from ..callbacks import History
-from ..core.population import Pareto
+from ..core.population import Pareto, SimplePareto
 import matplotlib.pyplot as plt
 import os
 import glob
@@ -21,7 +21,7 @@ import uuid
 import numpy as np
 
 
-def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, List, Tuple]] = {},
+def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
                      filepath='./fronts.png',
                      title='pareto fronts',
                      objective_name: List[str] = ['obj1', 'obj2'],
@@ -50,6 +50,7 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, List, Tuple]] = {},
             pareto_dict[name], key=lambda solution: tuple(solution))
     plt.figure()
     legends = []
+
     for name, pareto in pareto_dict.items():
         legends.append(name)
         obj1 = [solution[0] for solution in pareto]

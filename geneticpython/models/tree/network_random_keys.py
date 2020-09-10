@@ -9,12 +9,10 @@ from geneticpython.core.individual import Individual, Solution
 from geneticpython.core.individual.chromosome import FloatChromosome
 from typing import Dict, List, NewType, Tuple, Union
 
-from .tree import KruskalTree
+from .tree import KruskalTree, EdgeList
 
 import numpy as np
 
-EdgeList = NewType(
-    "EdgeList", Union[List[Union[List[int], Tuple[int]]], Tuple[Union[List[int], Tuple[int]]]])
 
 
 class NetworkRandomKeys(Individual):
@@ -25,17 +23,11 @@ class NetworkRandomKeys(Individual):
         Evolutionary computation. 10. 75-97. 10.1162/106365602317301781. 
     """
 
-    def __init__(self, edge_list: EdgeList, network: KruskalTree):
-        if any(len(edge) != 2 for edge in edge_list):
-            raise ValueError(
-                "Each edge has to be a list or tuple containing 2 vertices. \
-                For example: for two edges: 1-2, 2-3 --> [(1,2), (2,3)}]")
-
-        edges_size = len(edge_list)
+    def __init__(self, number_of_vertices: int, edge_list: EdgeList, network: KruskalTree = None):
+        self.network = network or KruskalTree(number_of_vertices, edge_list=edge_list)
+        edges_size = len(self.network.edge_list)
         chromosome = FloatChromosome(edges_size, [0, 1])
         super(NetworkRandomKeys, self).__init__(chromosome)
-        self.network = network
-        self.edge_list = edge_list
 
     def decode(self) -> KruskalTree:
         genes = np.copy(self.chromosome.genes)
@@ -44,7 +36,7 @@ class NetworkRandomKeys(Individual):
         self.network.initialize()
 
         for i in order:
-            u, v = self.edge_list[i]
+            u, v = self.network.edge_list[i]
             self.network.add_edge(u, v)
 
         self.network.repair()

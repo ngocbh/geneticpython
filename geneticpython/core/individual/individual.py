@@ -62,7 +62,6 @@ class Individual:
         return indiv
 
     def init(self, chromosome: Chromosome = None, solution: Solution = None, random_state=None):
-        random_state = check_random_state(random_state or self.random_state)
         if chromosome != None:
             self.chromosome = chromosome
         elif solution != None:
@@ -70,7 +69,11 @@ class Individual:
             self.chromosome = self.encode(solution)
         else:
             # initialize randomly
-            self.chromosome.init_genes(random_state=random_state)
+            self.random_init(random_state=random_state)
+
+    def random_init(self, random_state=None):
+        random_state = check_random_state(random_state or self.random_state)
+        self.chromosome.init_genes(random_state=random_state)
 
     def update_genes(self, genes: Union[np.ndarray, tuple, list]):
         self.chromosome.init_genes(genes=genes)

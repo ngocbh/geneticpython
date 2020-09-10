@@ -22,7 +22,7 @@ class IntChromosome(Chromosome):
 
     def init_genes(self, genes=None, random_state=None):
         if genes != None:
-            if (isinstance(genes,(tuple,list)) and len(genes) != self.length):
+            if (isinstance(genes,(tuple,list)) and len(genes) == self.length):
                 self.genes = np.array(genes)
             elif isinstance(genes, np.ndarray) and genes.ndim == 1 and genes.shape[0] == self.length:
                 self.genes = genes

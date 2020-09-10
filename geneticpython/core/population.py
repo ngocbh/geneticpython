@@ -61,7 +61,7 @@ class Population():
         ret = []
         for _ in range(self.size):
             new_indiv = self.individual_temp.clone()
-            new_indiv.init(random_state=random_state)
+            new_indiv.random_init(random_state=random_state)
             ret.append(new_indiv)
         return ret
 
