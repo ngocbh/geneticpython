@@ -8,7 +8,7 @@ Description:
 from __future__ import absolute_import
 
 from geneticpython.core import Individual
-from geneticpython.models.tree import Tree
+from geneticpython.models.tree import Tree, RootedTree
 from geneticpython.utils.validation import check_random_state
 from .mutation import Mutation
 
@@ -59,7 +59,7 @@ class TreeMutation(Mutation):
                              got {type(tree)}")
 
         # copy the edges of previous tree
-        edges = deepcopy(tree.edges)
+        edges = list(tree.edges)
 
         # find unused edges in tree, used to choose new edge
         unused_edges = list()
@@ -68,14 +68,14 @@ class TreeMutation(Mutation):
                 unused_edges.append((u, v))
 
         # choose new edge
-        idx = random_state.random_integers(0, len(unused_edges)-1)
+        idx = random_state.randint(0, len(unused_edges))
         new_edge = unused_edges[idx]
 
         # find cycle path after create new edge
         path = tree.find_path(source=new_edge[0], destination=new_edge[1])
 
         # choose random edge on cycle to remove (break cycle)
-        idx = random_state.random_integers(0, len(path)-2)
+        idx = random_state.randint(0, len(path)-1)
         removed_edge = (path[idx], path[idx+1])
 
         if removed_edge in edges:
@@ -83,18 +83,24 @@ class TreeMutation(Mutation):
         else:
             edges.remove((removed_edge[1], removed_edge[0]))
 
-        edges.add(new_edge)
-        
+        edges.append(new_edge)
+
+        if isinstance(tree, RootedTree):
+            edges = tree.sort_by_bfs_order(edges)
+            
         # make new tree from edges
         tree.initialize()
         for u, v in edges:
             tree.add_edge(u, v)
+
         tree.repair()
 
         # reencode tree to ret_indv
         try:
             ret_indv.encode(tree)
-        except:
+        except NotImplementedError:
             raise ValueError("Cannot call encode method. TreeMutation requires encode method in Individual")
+        except Exception as e:
+            raise e
 
         return ret_indv

@@ -18,6 +18,7 @@ from random import Random
 from typing import Callable
 
 import random
+import sys
 import numpy as np
 
 
@@ -88,8 +89,10 @@ class KruskalCrossover(Crossover):
         try:
             offspring1.encode(children[0])
             offspring2.encode(children[1])
-        except:
-            raise ValueError("Cannot call encode method. KruskalCrossover requires encode method in Individual")
+        except NotImplementedError:
+            raise ValueError("Cannot call encode method. PrimCrossover requires encode method in Individual")
+        except Exception as e:
+            raise e
             
         return offspring1, offspring2
                 

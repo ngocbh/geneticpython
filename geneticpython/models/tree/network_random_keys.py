@@ -23,9 +23,9 @@ class NetworkRandomKeys(Individual):
         Evolutionary computation. 10. 75-97. 10.1162/106365602317301781. 
     """
 
-    def __init__(self, number_of_vertices: int, edge_list: EdgeList, network: KruskalTree = None):
-        self.network = network or KruskalTree(number_of_vertices, edge_list=edge_list)
-        edges_size = len(self.network.edge_list)
+    def __init__(self, number_of_vertices: int, potential_edges: EdgeList, network: KruskalTree = None):
+        self.network = network or KruskalTree(number_of_vertices, potential_edges=potential_edges)
+        edges_size = len(self.network.potential_edges)
         chromosome = FloatChromosome(edges_size, [0, 1])
         super(NetworkRandomKeys, self).__init__(chromosome)
 
@@ -36,7 +36,7 @@ class NetworkRandomKeys(Individual):
         self.network.initialize()
 
         for i in order:
-            u, v = self.network.edge_list[i]
+            u, v = self.network.potential_edges[i]
             self.network.add_edge(u, v)
 
         self.network.repair()

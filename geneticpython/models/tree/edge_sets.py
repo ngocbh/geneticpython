@@ -16,20 +16,20 @@ import numpy as np
 
 
 class EdgeSets(Individual):
+    """EdgeSets.
+    """
+
     def __init__(self, number_of_vertices, 
                  solution: Tree = None,
-                 edge_list: EdgeList = None):
+                 potential_edges: EdgeList = None,
+                 init_method: str = None):
         self.number_of_vertices = number_of_vertices
         chromosome = IntChromosome(
             (self.number_of_vertices-1) * 2, domains=[0, number_of_vertices - 1])
         super(EdgeSets, self).__init__(chromosome=chromosome)
-        self.solution = solution or Tree(number_of_vertices, edge_list=edge_list)
-        self.__initialization_method = 'KruskalRST'
-
-    def set_initialization_method(self, method: str):
-        if method not in Tree.initialization_methods:
-            raise ValueError(f"Invalid initialization method, only accept {Tree.initialization_methods}")
-        self.__initialization_method = method
+        self.solution = solution or Tree(number_of_vertices, potential_edges=potential_edges, init_method=init_method)
+        if init_method is not None:
+            self.solution.set_initialization_method(init_method)
 
     def decode(self) -> Tree:
         """decode.
@@ -64,6 +64,7 @@ class EdgeSets(Individual):
             genes[2*i], genes[2*i+1] = edge_list[j]
 
         self.update_genes(genes)
+        self.solution = solution
 
     def random_init(self, random_state=None):
         """random_init.
@@ -71,9 +72,7 @@ class EdgeSets(Individual):
         Args:
             random_state:
         """
-        if self.__initialization_method == 'KruskalRST':
-            self.solution.create_kruskal_rst(random_state)
-
+        self.solution.random_init(random_state)
         genes = []
         for edge in self.solution.edges:
             genes.extend(edge)

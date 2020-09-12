@@ -22,43 +22,153 @@ EdgeList = NewType(
 
 
 class Tree(Solution):
-    initialization_methods = ['RandWalkRST', 'PrimRST', 'KruskalRST']
+    initialization_methods = ['RandWalkRST', 'PrimRST']
 
-    def __init__(self, number_of_vertices: int, root: int = None, edge_list: EdgeList = None):
-        if any(len(edge) != 2 for edge in edge_list):
+    def __init__(self, number_of_vertices: int,
+                 root: int = None,
+                 potential_edges: EdgeList = None,
+                 init_method: str = 'RandWalkRST'):
+        if any(len(edge) != 2 for edge in potential_edges):
             raise ValueError(
                 "Each edge has to be a list or tuple containing 2 vertices. \
                 For example: for two edges: 1-2, 2-3 --> [(1,2), (2,3)}]")
-        if edge_list is None:
-            self.edge_list = set()
-            for i in range(number_of_vertices):
-                for j in range(i):
-                    self.edge_list.add((j, i))
-            self.edge_list = list(self.edge_list)
-        else:
-            self.edge_list = set()
-            for u, v in edge_list:
-                if (u, v) not in self.edge_list and (v, u) not in self.edge_list:
-                    self.edge_list.add((u, v))
-            self.edge_list = list(self.edge_list)
+
         self.number_of_vertices = number_of_vertices
         self.root = root
+
+        self.potential_edges = set()
+        self.potential_adj = [list() for _ in range(number_of_vertices)]
+        if potential_edges is None:
+            for i in range(number_of_vertices):
+                for j in range(i):
+                    self.potential_edges.add((j, i))
+                    self.potential_adj[i].append(j)
+                    self.potential_adj[j].append(i)
+
+            self.potential_edges = list(self.potential_edges)
+        else:
+            for u, v in potential_edges:
+                if (u, v) not in self.potential_edges and (v, u) not in self.potential_edges:
+                    self.potential_edges.add((u, v))
+                    self.potential_adj[u].append(v)
+                    self.potential_adj[v].append(u)
+            self.potential_edges = list(self.potential_edges)
+
+        self.set_initialization_method(init_method)
         self.initialize()
 
     def initialize(self):
-        self.adjacency = [set() for _ in range(self.number_of_vertices)]
-        self.edges = set()
+        self.adjacency = [list() for _ in range(self.number_of_vertices)]
+        self.edges = list()
 
     def clone(self):
         return deepcopy(self)
 
-    def get_adjacency(self):
-        self.adjacency = [set() for _ in range(self.number_of_vertices)]
-        for u, v in self.edges:
-            self.adjacency[u].add(v)
-            self.adjacency[v].add(u)
+    def get_adjacency(self, edges=None):
+        __edges = edges or self.edges
+        adjacency = [set() for _ in range(self.number_of_vertices)]
+        for u, v in __edges:
+            adjacency[u].add(v)
+            adjacency[v].add(u)
 
-        return self.adjacency
+        if edges is None:
+            self.adjacency = adjacency
+        return adjacency
+
+    def random_init(self, random_state=None):
+        if self._initialization_method == 'RandWalkRST':
+            self.create_random_walk_rst(random_state)
+        elif self._initialization_method == 'PrimRST':
+            self.create_prim_rst(random_state)
+
+    def set_initialization_method(self, method: str):
+        """set_initialization_method.
+
+        Args:
+            method (str): method
+        """
+        if method not in self.initialization_methods:
+            raise ValueError(
+                f"Invalid initialization method, only accept {self.initialization_methods}")
+        self._initialization_method = method
+
+    def create_prim_rst(self, random_state=None):
+        random_state = check_random_state(random_state)
+        if self.root is not None:
+            root = self.root
+        else:
+            random_state.randint(0, self.number_of_vertices)
+
+        self.initialize()
+        if len(self.edges) != 0:
+            raise Exception('Default random init on Tree only accept empty Tree at initialization.\n\
+                            Donot add_edge at initialize() or try other random init function.')
+        # Set of connected nodes
+        C = set()
+        # eligible edges
+        A = list()  # i cannot use set() because it does not support indexing (for random choice)
+
+        # Init tree
+        C.add(root)
+        for v in self.potential_adj[root]:
+            A.append((root, v))
+
+        while len(C) < self.number_of_vertices:
+            idx = random_state.randint(0, len(A))
+            u, v = A[idx]
+            A.pop(idx)  # complexity: O(n): bad implementation
+
+            if v not in C:
+                self.add_edge(u, v)
+                C.add(v)
+                for w in self.potential_adj[v]:
+                    if w not in C:
+                        A.append((v, w))
+
+            if len(A) == 0:
+                raise ValueError("Bad input, unconnected graph")
+
+        self.repair()
+
+    def create_random_walk_rst(self, random_state=None):
+        random_state = check_random_state(random_state)
+        if self.root is not None:
+            root = self.root
+        else:
+            random_state.randint(0, self.number_of_vertices)
+
+        self.initialize()
+        if len(self.edges) != 0:
+            raise Exception('Default random init on Tree only accept empty Tree at initialization.\n\
+                            Donot add_edge at initialize() or try other random init function.')
+
+        mark = [False] * self.number_of_vertices
+        mark[root] = True
+        visited_nodes = 1
+
+        v0 = root
+        while visited_nodes != self.number_of_vertices:
+            v1 = random_state.choice(self.potential_adj[v0])
+            if not mark[v1]:
+                self.add_edge(v0, v1)
+                mark[v1] = True
+                visited_nodes += 1
+            v0 = v1
+
+        self.repair()
+
+    def from_edge_list(self, edge_list: EdgeList, check_validity: bool = True):
+        if any(len(edge) != 2 for edge in edge_list):
+            raise ValueError(
+                "Each edge has to be a list or tuple containing 2 vertices. \
+                For example: for two edges: 1-2, 2-3 --> [(1,2), (2,3)}]")
+        self.initialize()
+        for u, v in edge_list:
+            self.add_edge(u, v)
+        self.repair()
+        if check_validity:
+            return self.check_validity()
+        return True
 
     def find_path(self, source, destination):
         __visited = [False] * self.number_of_vertices
@@ -89,10 +199,12 @@ class Tree(Solution):
         raise NotImplementedError
 
     def add_edge(self, u: int, v: int) -> bool:
-        raise NotImplementedError
+        self.adjacency[u].append(v)
+        self.adjacency[v].append(u)
+        self.edges.append((u, v))
 
     def check_validity(self) -> bool:
-        __root = self.root or 0
+        __root = self.root if self.root is not None else 0
         __visited = [False] * self.number_of_vertices
 
         def dfs(u):
@@ -102,28 +214,11 @@ class Tree(Solution):
                     dfs(v)
 
         dfs(__root)
-        return len(self.edges) and all(__visited)
-
-    def create_kruskal_rst(self, random_state=None):
-        """random_init.
-
-        Args:
-            random_state:
-        """
-        random_state = check_random_state(random_state)
-        # order = random_state.permutation(np.arange(len(self.edge_list)))
-        weight = random_state.random(len(self.edge_list))
-        order = np.argsort(-weight)
-        self.initialize()
-        for i in order:
-            u, v = self.edge_list[i]
-            if self.try_add_edge(u, v):
-                self.add_edge(u, v)
-
-        self.repair()
+        return len(self.edges) == self.number_of_vertices-1 and all(__visited)
 
 
 class KruskalTree(Tree):
+    initialization_methods = ['RandWalkRST', 'PrimRST', 'KruskalRST']
 
     def initialize(self):
         super(KruskalTree, self).initialize()
@@ -157,19 +252,44 @@ class KruskalTree(Tree):
         if not self.try_add_edge(u, v):
             return False
         self.union(u, v)
-        self.adjacency[u].add(v)
-        self.adjacency[v].add(u)
-        self.edges.add((u, v))
+        super(KruskalTree, self).add_edge(u, v)
         return True
+
+    def random_init(self, random_state=None):
+        if self._initialization_method == 'KruskalRST':
+            self.create_kruskal_rst(random_state)
+        else:
+            super(KruskalTree, self).random_init(random_state)
+
+    def create_kruskal_rst(self, random_state=None):
+        """random_init.
+
+        Args:
+            random_state:
+        """
+        random_state = check_random_state(random_state)
+        # order = random_state.permutation(np.arange(len(self.potential_edges)))
+        weight = random_state.random(len(self.potential_edges))
+        order = np.argsort(-weight)
+        self.initialize()
+        for i in order:
+            u, v = self.potential_edges[i]
+            if self.try_add_edge(u, v):
+                self.add_edge(u, v)
+
+        self.repair()
 
 
 class RootedTree(Tree):
-    def __init__(self, number_of_vertices: int, root: int, edge_list: EdgeList = None):
+    initialization_methods = ['RandWalkRST', 'PrimRST']
+
+    def __init__(self, number_of_vertices: int, root: int, potential_edges: EdgeList = None):
         if root is None or root < 0 or root >= number_of_vertices:
             raise ValueError(
                 "Invalid root param, requires 0 <= root < number_of_vertices")
 
-        super(RootedTree, self).__init__(number_of_vertices, root, edge_list)
+        super(RootedTree, self).__init__(number_of_vertices,
+                                         root=root, potential_edges=potential_edges)
 
     def initialize(self):
         super(RootedTree, self).initialize()
@@ -186,10 +306,92 @@ class RootedTree(Tree):
             self.parent[u] = v
         else:
             self.parent[v] = u
-        self.adjacency[u].add(v)
-        self.adjacency[v].add(u)
-        self.edges.add((u, v))
+        super(RootedTree, self).add_edge(u, v)
         return True
+
+    def create_prim_rst(self, random_state=None):
+        """create_prim_rst.
+            This implementation is not good.
+            I cannot find any data structure that support both random choice and insert, remove element
+            This implementation does not take care unconnected graph (no tree)
+
+        Args:
+            random_state:
+        """
+        random_state = check_random_state(random_state)
+
+        self.initialize()
+
+        # Set of connected nodes
+        C = set()
+        # eligible edges
+        A = list()
+
+        # Init tree
+        for u in range(self.number_of_vertices):
+            if self.parent[u] != -1:
+                C.add(u)
+                for v in self.potential_adj[u]:
+                    if v not in C:
+                        A.append((u, v))
+
+        while len(C) < self.number_of_vertices:
+            idx = random_state.randint(0, len(A))
+            u, v = A[idx]
+            if v not in C:
+                self.add_edge(u, v)
+                C.add(v)
+                for w in self.potential_adj[v]:
+                    if w not in C:
+                        A.append((v, w))
+
+        self.repair()
+
+    def create_random_walk_rst(self, random_state=None):
+        random_state = check_random_state(random_state)
+
+        self.initialize()
+        mark = [False] * self.number_of_vertices
+        visited_nodes = 0
+        for u in range(self.number_of_vertices):
+            if self.parent[u] != -1:
+                mark[u] = True
+                visited_nodes += 1
+
+        v0 = self.root
+        while visited_nodes != self.number_of_vertices:
+            v1 = random_state.choice(self.potential_adj[v0])
+            if not mark[v1]:
+                self.add_edge(v0, v1)
+                mark[v1] = True
+                visited_nodes += 1
+            v0 = v1
+
+        self.repair()
+
+    def sort_by_bfs_order(self, edge_list):
+        adj = self.get_adjacency(edge_list)
+        __visited = [False] * self.number_of_vertices
+        queue = deque()
+        edge_list = []
+        queue.append(self.root)
+
+        while (len(queue) > 0):
+            u = queue.popleft()
+            if __visited[u]:
+                continue
+            __visited[u] = True
+
+            for v in adj[u]:
+                if not __visited[v]:
+                    edge_list.append((u, v))
+                    queue.append(v)
+
+        return edge_list
+
+    def from_edge_list(self, edge_list: EdgeList, check_validity: bool = True):
+        edge_list = self.sort_by_bfs_order(edge_list)
+        return super(RootedTree, self).from_edge_list(edge_list, check_validity=check_validity)
 
 
 class LinkCutTree(Tree):
