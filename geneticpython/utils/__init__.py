@@ -10,3 +10,4 @@ from __future__ import absolute_import
 
 from .validation import *
 from .noindent_encoder import *
+from .rset import *

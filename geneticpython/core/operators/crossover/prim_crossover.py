@@ -11,6 +11,7 @@ from __future__ import absolute_import
 from geneticpython.core.operators.crossover import Crossover
 from geneticpython.core.individual import Individual
 from geneticpython.utils.validation import check_random_state
+from geneticpython.utils import rset
 from geneticpython.models.tree import Tree, RootedTree
 
 from copy import deepcopy
@@ -66,7 +67,7 @@ class PrimCrossover(Crossover):
             # Set of connected nodes
             C = set()
             # eligible edges
-            A = list()
+            A = rset()
 
             # Init tree 
             for u in range(trees[i].number_of_vertices):
@@ -74,17 +75,19 @@ class PrimCrossover(Crossover):
                     C.add(u)
                     for v in potential_adj[u]:
                         if v not in C:
-                            A.append((u, v))
+                            A.add((u, v))
 
             while len(C) < trees[i].number_of_vertices:
-                idx = random_state.randint(0, len(A))
-                u, v = A[idx]
+                u, v = A.random_choice(random_state)
+                A.remove((u, v))
                 if v not in C:
                     trees[i].add_edge(u, v)
                     C.add(v)
                     for w in potential_adj[v]:
                         if w not in C:
-                            A.append((v, w))
+                            A.add((v, w))
+                if len(A) == 0 and len(C) != trees[i].number_of_vertices:
+                    raise ValueError('Cannot create random spanning tree from unconnected tree')
             trees[i].repair()
 
         try:

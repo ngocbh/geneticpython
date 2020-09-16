@@ -9,3 +9,4 @@ from .mutation import *
 from .flip_bit_mutation import *
 from .polynomial_mutation import *
 from .tree_mutation import *
+from .mutation_compact import MutationCompact

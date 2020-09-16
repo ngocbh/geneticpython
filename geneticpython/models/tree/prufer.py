@@ -7,18 +7,17 @@ Description:
 """
 from __future__ import absolute_import
 
-from geneticpython.core.individual import Individual
+from geneticpython.models.int_individual import IntIndividual
 from geneticpython.core.individual.chromosome import IntChromosome
 
 from .tree import Tree
 
-class Prufer(Individual):
+class Prufer(IntIndividual):
     def __init__(self):
         pass
 
     def decode(self):
         pass
 
-    @classmethod
-    def encode(cls, tree : Tree):
+    def encode(self, tree : Tree):
         pass

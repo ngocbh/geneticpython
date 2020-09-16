@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 from geneticpython.core.individual import Solution
 from geneticpython.utils.validation import check_random_state
+from geneticpython.utils import rset
 from typing import Callable
 from copy import deepcopy
 from collections import deque
@@ -106,28 +107,26 @@ class Tree(Solution):
         # Set of connected nodes
         C = set()
         # eligible edges
-        A = list()  # i cannot use set() because it does not support indexing (for random choice)
+        A = rset() # my implementation of set that helps get random in set in O(1)
 
         # Init tree
         C.add(root)
         for v in self.potential_adj[root]:
-            A.append((root, v))
+            A.add((root, v))
 
         while len(C) < self.number_of_vertices:
-            idx = random_state.randint(0, len(A))
-            u, v = A[idx]
-            A.pop(idx)  # complexity: O(n): bad implementation
+            u, v = A.random_choice(random_state)
+            A.remove((u, v))
 
             if v not in C:
                 self.add_edge(u, v)
                 C.add(v)
                 for w in self.potential_adj[v]:
                     if w not in C:
-                        A.append((v, w))
+                        A.add((v, w))
 
             if len(A) == 0:
-                raise ValueError("Bad input, unconnected graph")
-
+                raise ValueError('Cannot create random spanning tree from unconnected tree')
         self.repair()
 
     def create_random_walk_rst(self, random_state=None):
@@ -325,7 +324,7 @@ class RootedTree(Tree):
         # Set of connected nodes
         C = set()
         # eligible edges
-        A = list()
+        A = rset()
 
         # Init tree
         for u in range(self.number_of_vertices):
@@ -333,17 +332,20 @@ class RootedTree(Tree):
                 C.add(u)
                 for v in self.potential_adj[u]:
                     if v not in C:
-                        A.append((u, v))
+                        A.add((u, v))
 
         while len(C) < self.number_of_vertices:
-            idx = random_state.randint(0, len(A))
-            u, v = A[idx]
+            u, v = A.random_choice(random_state)
+            A.remove((u, v))
             if v not in C:
                 self.add_edge(u, v)
                 C.add(v)
                 for w in self.potential_adj[v]:
                     if w not in C:
-                        A.append((v, w))
+                        A.add((v, w))
+
+            if len(A) == 0 and len(C) != self.number_of_vertices:
+                raise ValueError('Cannot create random spanning tree from unconnected tree')
 
         self.repair()
 
