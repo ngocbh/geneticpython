@@ -83,6 +83,9 @@ def delta_metric(S : Union[Pareto, SimplePareto]):
     for i in range(n-1):
         d[i] = euclidean_distance(B[i], B[i+1])
 
+    if n < 2:
+        return float('inf')
+
     d_mean = np.mean(d) 
     delta = np.sum(np.abs(d - d_mean)) / (n-1)
     return delta
@@ -97,6 +100,9 @@ def spacing_metric(S: Union[Pareto, SimplePareto]):
         for j in range(n):
             if i != j:
                 d[i] = min(d[i], l1_distance(B[i], B[j]))
+
+    if n < 2:
+        return float('inf')
 
     d_mean = np.mean(d)
     sp = np.sqrt(np.sum(np.square(d_mean - d)) / (n-1))
