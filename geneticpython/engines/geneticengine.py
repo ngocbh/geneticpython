@@ -118,6 +118,7 @@ class GeneticEngine(ABC):
             self.population.individuals)
         self.population.individuals = self.do_evaluation(
             self.population.individuals)
+        logs = self._update_logs(logs)
         self.callbacks.on_init_population_end(logs=logs)
 
         for gen in range(self.generations):

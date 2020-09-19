@@ -26,7 +26,11 @@ class History(Callback):
         self.history = []
 
     def on_init_population_end(self, logs=None):
-        pass
+        logs = logs or {}
+        self.history.append(copy.deepcopy(logs))
+        # Set the history attribute on the model after the epoch ends. This will
+        # make sure that the state which is set is the latest one.
+        self.engine.history = self
 
     def on_generation_begin(self, gen, logs=None):
         pass

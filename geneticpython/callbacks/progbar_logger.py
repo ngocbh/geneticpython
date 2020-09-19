@@ -20,7 +20,7 @@ class ProgbarLogger(Callback):
         self.default_metrics = default_metrics
 
     def on_init_population_begin(self, logs=None):
-        print('Initializing...', end='', flush=True)
+        print('Initializing...', flush=True)
 
     def on_init_population_end(self, logs=None):
         print('Finished Initialization!')
