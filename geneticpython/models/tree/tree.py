@@ -67,14 +67,18 @@ class Tree(Solution):
 
     def get_adjacency(self, edges=None):
         __edges = edges or self.edges
-        adjacency = [set() for _ in range(self.number_of_vertices)]
+        adjacency = [list() for _ in range(self.number_of_vertices)]
         for u, v in __edges:
-            adjacency[u].add(v)
-            adjacency[v].add(u)
+            adjacency[u].append(v)
+            adjacency[v].append(u)
 
         if edges is None:
             self.adjacency = adjacency
         return adjacency
+
+    def get_potential_adj(self):
+        self.potential_adj = self.get_adjacency(self.potential_edges)
+        return self.potential_adj
 
     def random_init(self, random_state=None):
         if self._initialization_method == 'RandWalkRST':
@@ -266,6 +270,7 @@ class KruskalTree(Tree):
         Args:
             random_state:
         """
+
         random_state = check_random_state(random_state)
         # order = random_state.permutation(np.arange(len(self.potential_edges)))
         weight = random_state.random(len(self.potential_edges))
@@ -394,7 +399,6 @@ class RootedTree(Tree):
     def from_edge_list(self, edge_list: EdgeList, check_validity: bool = True):
         edge_list = self.sort_by_bfs_order(edge_list)
         return super(RootedTree, self).from_edge_list(edge_list, check_validity=check_validity)
-
 
 class LinkCutTree(Tree):
     def initialize(self):

@@ -108,7 +108,9 @@ class GeneticEngine(ABC):
         return logs
 
     def run(self, generations: int = None) -> History:
-        self.generations = generations or self.generations
+        if generations is not None:
+            self.generations = generations
+
         logs = None
         self.callbacks.on_running_begin(logs=logs)
 
