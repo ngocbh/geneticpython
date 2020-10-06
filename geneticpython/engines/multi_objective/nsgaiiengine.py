@@ -28,7 +28,7 @@ class NSGAIIEngine(MultiObjectiveEngine):
 
     def __init__(self, population: Population,
                  objectives: List[Callable[[Individual], Union[float, int]]] = None,
-                 selection: Selection = None,
+                 tournament_size: int = 2,
                  selection_size: int = None,
                  crossover: Crossover = None,
                  mutation: Mutation = None,
@@ -37,7 +37,7 @@ class NSGAIIEngine(MultiObjectiveEngine):
                  random_state: int = None):
 
         replacement = RankReplacement()
-        selection = selection or TournamentSelection(2)
+        selection = TournamentSelection(tournament_size)
 
         super(NSGAIIEngine, self).__init__(population=population,
                                            objectives=objectives,

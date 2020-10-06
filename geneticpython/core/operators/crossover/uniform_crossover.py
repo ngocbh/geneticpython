@@ -6,7 +6,7 @@
 from __future__ import absolute_import
 
 from .crossover import Crossover
-from geneticpython.core.individual import Individual
+from geneticpython.models.int_individual import IntIndividual
 from geneticpython.utils.validation import check_random_state
 
 from copy import deepcopy
@@ -20,7 +20,7 @@ class UniformCrossover(Crossover):
         self.pe = pe
         super(UniformCrossover, self).__init__(pc=pc)
 
-    def cross(self, father : Individual, mother : Individual, random_state=None):
+    def cross(self, father : IntIndividual, mother : IntIndividual, random_state=None):
         ''' Cross chromsomes of parent using uniform crossover method.
         :param population: Population where the selection operation occurs.
         :type population: :obj:`gaft.components.Population`

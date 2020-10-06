@@ -18,9 +18,9 @@ from typing import Callable
 import random
 import numpy as np
 
-class SinglePointCrossover(Crossover):
+class PointCrossover(Crossover):
     """
-        Single point crossover
+        n point crossover
 
         params:
         :pc: probability of crossover
@@ -28,9 +28,10 @@ class SinglePointCrossover(Crossover):
             :parameters: point id, [0, length-1)
             :return: True if point id can be used to cross, False otherwise
     """
-    def __init__(self, pc, point_filter : Callable[[int], bool] = lambda x: True):
+    def __init__(self, pc, n_points: int, point_filter : Callable[[int], bool] = lambda x: True):
         self.point_filter = np.vectorize(point_filter)
-        super(SinglePointCrossover, self).__init__(pc=pc)
+        self.n_points = n_points
+        super(PointCrossover, self).__init__(pc=pc)
 
     def cross(self, father : Individual, mother : Individual, random_state=None):
         ''' Cross chromsomes of parent using single point crossover method.
@@ -51,13 +52,18 @@ class SinglePointCrossover(Crossover):
 
         points = np.arange(length-1)
         points = points[self.point_filter(points)]
-        slt_point = random_state.choice(points)
+        slt_points = list(random_state.choice(points, self.n_points))
+        slt_points.append(length)
+        slt_points.sort()
 
+        do_exchange = False
+        j = 0
         for i in range(father.chromosome.length):
-            g1, g2 = chrom1[i], chrom2[i]
-            do_exchange = (i > slt_point)
+            if i > slt_points[j]:
+                do_exchange ^= 1
+                j += 1
             if do_exchange:
-                chrom1[i], chrom2[i] = g2, g1
+                chrom1[i], chrom2[i] = chrom2[i], chrom1[i]
 
         child1, child2 = father.clone(), father.clone()
         child1.init(chromosome=chrom1)

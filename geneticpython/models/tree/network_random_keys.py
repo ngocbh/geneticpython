@@ -23,9 +23,20 @@ class NetworkRandomKeys(Individual):
         Evolutionary computation. 10. 75-97. 10.1162/106365602317301781. 
     """
 
-    def __init__(self, number_of_vertices: int, potential_edges: EdgeList, network: KruskalTree = None):
+    def __init__(self, number_of_vertices: int, potential_edges: EdgeList, network: KruskalTree = None, use_encode=False):
         self.network = network or KruskalTree(number_of_vertices, potential_edges=potential_edges)
-        edges_size = len(self.network.potential_edges)
+        edges_size = len(potential_edges)
+        self.number_of_vertices = number_of_vertices
+        self.use_encode = use_encode
+        self.potential_edges = potential_edges
+        if use_encode:
+            self.edge_dict = dict()
+            idx = 0
+            for u, v in potential_edges:
+                self.edge_dict[(u, v)] = idx
+                self.edge_dict[(v, u)] = idx
+                idx += 1
+
         chromosome = FloatChromosome(edges_size, [0, 1])
         super(NetworkRandomKeys, self).__init__(chromosome)
 
@@ -36,15 +47,35 @@ class NetworkRandomKeys(Individual):
         self.network.initialize()
 
         for i in order:
-            u, v = self.network.potential_edges[i]
+            u, v = self.potential_edges[i]
             self.network.add_edge(u, v)
 
         self.network.repair()
         return self.network
     
-    @classmethod
-    def encode(cls, solution : Solution):
-        raise NotImplementedError("NetworkRandomKeys does not support encoding method")
+    def encode(self, network: KruskalTree):
+        if not self.use_encode:
+            raise NotImplementedError("You can init with use_encode to force use bias encoding method")
+
+        order = []
+        used = [False] * self.chromosome.length
+        for u, v in network.edges:
+            idx = self.edge_dict[(u, v)]
+            order.append(idx)
+            used[idx] = True
+
+        for i, b in enumerate(used):
+            if not b:
+                order.append(i)
+
+        n = len(order) + 2
+        step = 1.0/n
+        genes = np.zeros(self.chromosome.length)
+        for i, e in enumerate(order):
+            genes[e] = 1 - step * (i+1)
+            
+        self.update_genes(genes)
+        self.network = network
 
 if __name__ == '__main__':
     pass

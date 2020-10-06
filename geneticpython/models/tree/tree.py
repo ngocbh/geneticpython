@@ -29,7 +29,7 @@ class Tree(Solution):
                  root: int = None,
                  potential_edges: EdgeList = None,
                  init_method: str = 'RandWalkRST'):
-        if any(len(edge) != 2 for edge in potential_edges):
+        if potential_edges is not None and any(len(edge) != 2 for edge in potential_edges):
             raise ValueError(
                 "Each edge has to be a list or tuple containing 2 vertices. \
                 For example: for two edges: 1-2, 2-3 --> [(1,2), (2,3)}]")
@@ -73,7 +73,7 @@ class Tree(Solution):
             adjacency[v].append(u)
 
         if edges is None:
-            self.adjacency = adjacency
+            self.adjacency = adjacency.copy()
         return adjacency
 
     def get_potential_adj(self):
@@ -205,6 +205,7 @@ class Tree(Solution):
         self.adjacency[u].append(v)
         self.adjacency[v].append(u)
         self.edges.append((u, v))
+        return True
 
     def check_validity(self) -> bool:
         __root = self.root if self.root is not None else 0

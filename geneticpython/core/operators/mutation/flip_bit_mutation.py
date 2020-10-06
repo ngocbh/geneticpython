@@ -24,6 +24,7 @@ class FlipBitMutation(Mutation):
         self.pe = pe
 
     def mutate(self, individual: BinaryIndividual, random_state=None):
+        random_state = check_random_state(random_state)
         do_mutation = True if random_state.random() <= self.pm else False
 
         ret_individual = individual.clone()
