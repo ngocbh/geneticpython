@@ -19,6 +19,7 @@ from _ctypes import PyObj_FromPtr
 import re
 import uuid
 import numpy as np
+import itertools
 
 
 def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
@@ -28,6 +29,7 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
                      save=False,
                      show=True,
                      referenced_points=None,
+                     plot_line=False,
                      **kwargs):
     pareto_dict.update(kwargs)
     for name, pareto in pareto_dict.items():
@@ -50,13 +52,14 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
             pareto_dict[name], key=lambda solution: tuple(solution))
     plt.figure()
     legends = []
-
+    marker = itertools.cycle(('+', 'o', '*', '^', '.', ',')) 
     for name, pareto in pareto_dict.items():
         legends.append(name)
         obj1 = [solution[0] for solution in pareto]
         obj2 = [solution[1] for solution in pareto]
-        plt.scatter(obj1, obj2)
-        plt.plot(obj1, obj2)
+        plt.scatter(obj1, obj2, marker=next(marker))
+        if plot_line:
+            plt.plot(obj1, obj2)
 
     if referenced_points is not None:
         if isinstance(referenced_points, np.ndarray):
