@@ -30,6 +30,10 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
                      show=True,
                      referenced_points=None,
                      plot_line=False,
+                     marker=None,
+                     linestyle=None,
+                     s=None,
+                     linewidth=None,
                      **kwargs):
     pareto_dict.update(kwargs)
     for name, pareto in pareto_dict.items():
@@ -52,14 +56,19 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
             pareto_dict[name], key=lambda solution: tuple(solution))
     plt.figure()
     legends = []
-    marker = itertools.cycle(('+', 'o', '*', '^', '.', ',')) 
+    marker = marker or ('+', 'o', '*', '^', '.', ',')
+    iter_marker = itertools.cycle(marker)
     for name, pareto in pareto_dict.items():
         legends.append(name)
         obj1 = [solution[0] for solution in pareto]
         obj2 = [solution[1] for solution in pareto]
-        plt.scatter(obj1, obj2, marker=next(marker))
+        m = next(iter_marker)
+        plt.scatter(obj1, obj2, marker=m, s=s)
         if plot_line:
-            plt.plot(obj1, obj2)
+            plt.plot(obj1, obj2, 
+                     linewidth=linewidth,
+                     linestyle=linestyle,
+                     marker=m)
 
     if referenced_points is not None:
         if isinstance(referenced_points, np.ndarray):
@@ -76,7 +85,7 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
                     f'referenced_points value must be an instance of List[List[Union[int, float]]]')
             f1_rp = [solution[0] for solution in referenced_points]
             f2_rp = [solution[0] for solution in referenced_points]
-            plt.plot(f1_rp, f2_rp, color='black')
+            plt.plot(f1_rp, f2_rp, color='black', linewidth=linewidth)
 
     plt.xlabel(objective_name[0])
     plt.ylabel(objective_name[1])
