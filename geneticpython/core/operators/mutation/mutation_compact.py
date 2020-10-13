@@ -17,7 +17,10 @@ from itertools import accumulate
 from bisect import bisect_right
 
 class MutationCompact(Mutation):
-    def __init__(self, mutation_list : List[Mutation] = list(), pm_list : List[float] = list()):
+    def __init__(self, mutation_list : List[Mutation] = None, pm_list : List[float] = None):
+        mutation_list = mutation_list or []
+        pm_list = pm_list or []
+
         if len(mutation_list) != len(pm_list):
             raise ValueError(f'mutation_list and pm_list must have same length,\n\
                              given mutation_list:{len(mutation_list)} and pm_list:{len(pm_list)}')
