@@ -68,8 +68,9 @@ def l1_distance(a: SimpleSolution, b: SimpleSolution):
 
     return d
 
-def delta_metric(S : Union[Pareto, SimplePareto]):
+def delta_apostrophe(S : Union[Pareto, SimplePareto]):
     """delta_metric.
+        delta'
 
     Args:
         A (Union[Pareto, SimplePareto]): A
@@ -89,8 +90,14 @@ def delta_metric(S : Union[Pareto, SimplePareto]):
     d_mean = np.mean(d) 
     delta = np.sum(np.abs(d - d_mean)) / (n-1)
     return delta
- 
-def spacing_metric(S: Union[Pareto, SimplePareto]):
+
+def delta(S : Union[Pareto, SimplePareto], P : Union[Pareto, SimplePareto]):
+    raise NotImplementedError
+
+def delta_star(S : Union[Pareto, SimplePareto], P : Union[Pareto, SimplePareto]):
+    raise NotImplementedError
+
+def spacing(S: Union[Pareto, SimplePareto]):
     if isinstance(S, Pareto):
         S = S.all_objectives()
     B = deepcopy(S)
@@ -108,7 +115,7 @@ def spacing_metric(S: Union[Pareto, SimplePareto]):
     sp = np.sqrt(np.sum(np.square(d_mean - d)) / (n-1))
     return sp
 
-def coverage_metric(A : Union[Pareto, SimplePareto], B : Union[Pareto, SimplePareto]):
+def coverage(A : Union[Pareto, SimplePareto], B : Union[Pareto, SimplePareto]):
     if isinstance(A, Pareto):
         A = A.all_objectives()
     if isinstance(B, Pareto):
@@ -121,7 +128,42 @@ def coverage_metric(A : Union[Pareto, SimplePareto], B : Union[Pareto, SimplePar
 
     return noadb / len(B)
 
-def hypervolume_metric(S: SimplePareto, r : SimpleSolution):
+def hypervolume_2d(S: Union[Pareto, SimplePareto], r : SimpleSolution):
+    """hypervolume_2d.
+        http://www.mathwords.com/a/area_convex_polygon.htm
+
+    Args:
+        S (SimplePareto): S
+        r (SimpleSolution): r
+    """
+    if isinstance(S, Pareto):
+        S = S.all_objectives()
+    n = len(S)
+    if n == 0:
+        return 0
+    __S = deepcopy(S)
+    __S.sort(key=lambda x: tuple(x))
+    __S.append(r)
+
+    if any(len(s) != 2 for s in __S):
+        raise ValueError('This implementation is only used for 2-dimensional space')
+
+    HV = 0
+    for i in range(n):
+        HV += __S[i][0] * __S[i+1][1] - __S[i][1] * __S[i+1][0]
+
+    HV /= 2
+    raise HV
+
+def hypervolume(S: SimplePareto, r : SimpleSolution):
+    """hypervolume.
+        2006 IEEE Congress on Evolutionary Computation
+        Carlos M. Fonseca, An Improved Dimension-Sweep Algorithm for the Hypervolume Indicator
+
+    Args:
+        S (SimplePareto): S
+        r (SimpleSolution): r
+    """
     raise NotImplementedError
 
 def non_dominated_solutions(S: Union[Pareto, SimplePareto]):
@@ -129,3 +171,5 @@ def non_dominated_solutions(S: Union[Pareto, SimplePareto]):
         S = S.all_objectives()
 
     return len(S)
+
+
