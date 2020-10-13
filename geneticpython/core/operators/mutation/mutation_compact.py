@@ -22,10 +22,14 @@ class MutationCompact(Mutation):
             raise ValueError(f'mutation_list and pm_list must have same length,\n\
                              given mutation_list:{len(mutation_list)} and pm_list:{len(pm_list)}')
         self.pm_list = pm_list
-        for pm in pm_list:
-            if pm < 0.0 or pm > 1.0:
-                raise ValueError('Invalid mutation probability')
-        self.acc_pm = list(accumulate(pm_list)) 
+        if any(pm < 0.0 or pm > 1.0 for pm in pm_list):
+            raise ValueError('Invalid mutation probability')
+
+        if len(pm_list) > 0:
+            self.acc_pm = list(accumulate(pm_list)) 
+        else:
+            self.acc_pm = []
+
         if len(self.acc_pm) > 0 and self.acc_pm[-1] > 1.0:
             raise ValueError('Invalid pm_list, accumulation of mutation probability is greater than 1.0')
 

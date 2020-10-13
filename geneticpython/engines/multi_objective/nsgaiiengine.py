@@ -24,6 +24,19 @@ import itertools
 import numpy as np
 
 
+def default_crowded_comparator(p1: Individual, p2: Individual) -> int:
+    if p1.nondominated_rank < p2.nondominated_rank:
+        return -1
+    elif p1.nondominated_rank > p2.nondominated_rank:
+        return 1
+    else:
+        if p1.crowding_distance > p2.crowding_distance:
+            return -1
+        elif p1.crowding_distance < p2.crowding_distance:
+            return 1
+        else:
+            return 0
+
 class NSGAIIEngine(MultiObjectiveEngine):
 
     def __init__(self, population: Population,
@@ -34,10 +47,12 @@ class NSGAIIEngine(MultiObjectiveEngine):
                  mutation: Mutation = None,
                  callbacks: List[Callback] = None,
                  generations: int = 100,
-                 random_state: int = None):
+                 random_state: int = None,
+                 crowded_comparator: Callable[[Individual, Individual], int] = None):
 
         replacement = RankReplacement()
         selection = TournamentSelection(tournament_size)
+        self.crowded_comparator = crowded_comparator or default_crowded_comparator
 
         super(NSGAIIEngine, self).__init__(population=population,
                                            objectives=objectives,
@@ -50,19 +65,6 @@ class NSGAIIEngine(MultiObjectiveEngine):
                                            generations=generations,
                                            random_state=random_state)
 
-    @staticmethod
-    def crowded_comparator(p1: Individual, p2: Individual) -> int:
-        if p1.nondominated_rank < p2.nondominated_rank:
-            return -1
-        elif p1.nondominated_rank > p2.nondominated_rank:
-            return 1
-        else:
-            if p1.crowding_distance > p2.crowding_distance:
-                return -1
-            elif p1.crowding_distance < p2.crowding_distance:
-                return 1
-            else:
-                return 0
 
     @staticmethod
     def nondominated_sort(population: List[Individual]) -> List[List[Individual]]:
@@ -197,7 +199,7 @@ class NSGAIIEngine(MultiObjectiveEngine):
         new_population = self.replacement.replace(
             self.population.size,
             new_population,
-            comparator=NSGAIIEngine.crowded_comparator,
+            comparator=self.crowded_comparator,
             sorted=True,
             random_state=self.random_state)
         return new_population
