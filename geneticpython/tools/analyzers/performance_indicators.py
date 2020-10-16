@@ -144,16 +144,17 @@ def hypervolume_2d(S: Union[Pareto, SimplePareto], r : SimpleSolution):
     __S = deepcopy(S)
     __S.sort(key=lambda x: tuple(x))
     __S.append(r)
+    __S.insert(0, r)
 
     if any(len(s) != 2 for s in __S):
         raise ValueError('This implementation is only used for 2-dimensional space')
 
     HV = 0
-    for i in range(n):
+    for i in range(n+1):
         HV += __S[i][0] * __S[i+1][1] - __S[i][1] * __S[i+1][0]
 
     HV /= 2
-    raise HV
+    return HV
 
 def hypervolume(S: SimplePareto, r : SimpleSolution):
     """hypervolume.

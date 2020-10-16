@@ -299,7 +299,9 @@ class RootedTree(Tree):
     def initialize(self):
         super(RootedTree, self).initialize()
         self.parent = [-1] * self.number_of_vertices
+        self.depth = [-1] * self.number_of_vertices
         self.parent[self.root] = self.root
+        self.depth[self.root] = 0
 
     def try_add_edge(self, u: int, v: int) -> bool:
         return (self.parent[u] == -1) ^ (self.parent[v] == -1)
@@ -309,8 +311,10 @@ class RootedTree(Tree):
             return False
         if self.parent[u] == -1:
             self.parent[u] = v
+            self.depth[u] = self.depth[v] + 1
         else:
             self.parent[v] = u
+            self.depth[v] = self.depth[u] + 1
         super(RootedTree, self).add_edge(u, v)
         return True
 
