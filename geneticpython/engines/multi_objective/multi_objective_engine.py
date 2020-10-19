@@ -17,7 +17,7 @@ from ...callbacks import Callback, CallbackList
 from ...callbacks import History
 from ...core.population import Population
 from ...core.operators import Selection, Crossover, Mutation, Replacement
-from ...core.individual import Individual, SimpleSolution
+from ...core.individual import Individual
 
 import math
 

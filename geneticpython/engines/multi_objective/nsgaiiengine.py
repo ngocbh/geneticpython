@@ -10,13 +10,12 @@ from typing import List, Union, Callable, Dict
 from random import Random
 from tqdm.auto import tqdm
 
-from ...core.individual import Individual
-from ...core.population import Population, Pareto
-from ...core.operators import Selection, Crossover, Mutation
-from ...core.operators import Replacement, RankReplacement, TournamentSelection
-from ..geneticengine import GeneticEngine
-from ...callbacks import CallbackList, Callback, History
-from .multi_objective_engine import MultiObjectiveEngine, is_dominated
+from geneticpython.core import Individual, Population, Pareto
+from geneticpython.core.operators import Selection, Crossover, Mutation
+from geneticpython.core.operators import Replacement, RankReplacement, TournamentSelection
+from geneticpython.engines.geneticengine import GeneticEngine
+from geneticpython.callbacks import CallbackList, Callback, History
+from geneticpython.engines.multi_objective.multi_objective_engine import MultiObjectiveEngine, is_dominated
 
 import random
 import math

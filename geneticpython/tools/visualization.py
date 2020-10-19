@@ -9,8 +9,10 @@ Description:
 from __future__ import absolute_import
 
 from typing import List, Union, Dict, Tuple
-from ..callbacks import History
-from ..core.population import Pareto, SimplePareto
+from geneticpython.callbacks import History
+from geneticpython.core.pareto import Pareto
+from geneticpython.utils.typing import SimplePareto
+
 import matplotlib.pyplot as plt
 import os
 import glob
@@ -34,6 +36,8 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
                      linestyle=None,
                      s=None,
                      linewidth=None,
+                     do_axis=lambda ax : None,
+                     fillstyle=None,
                      **kwargs):
     pareto_dict.update(kwargs)
     for name, pareto in pareto_dict.items():
@@ -54,20 +58,32 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
                     solution {solution} of pareto {name} has {len(solution)}")
         pareto_dict[name] = sorted(
             pareto_dict[name], key=lambda solution: tuple(solution))
-    plt.figure()
+    fig, ax = plt.subplots()
     legends = []
     marker = marker or ('+', 'o', '*', '^', '.', ',')
     iter_marker = itertools.cycle(marker)
+    
+    if fillstyle == 'flicker':
+        fillstyle = ['full', 'none']
+    elif fillstyle == 'all':
+        fillstyle = ['none', 'top', 'bottom', 'right', 'left', 'full']
+    else:
+        fillstyle = [fillstyle]
+
+    iter_fillstyle = itertools.cycle(fillstyle)
+
     for name, pareto in pareto_dict.items():
         legends.append(name)
         obj1 = [solution[0] for solution in pareto]
         obj2 = [solution[1] for solution in pareto]
         m = next(iter_marker)
-        plt.scatter(obj1, obj2, marker=m, s=s)
+        fs = next(iter_fillstyle)
+        # ax.scatter(obj1, obj2, marker=m, s=s)
         if plot_line:
-            plt.plot(obj1, obj2, 
+            ax.plot(obj1, obj2, 
                      linewidth=linewidth,
                      linestyle=linestyle,
+                     fillstyle=fs,
                      marker=m)
 
     if referenced_points is not None:
@@ -76,7 +92,7 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
                 raise ValueError(
                     'referenced_points must have shape like (number_of_points)*(numer_of_objectives) \
                     and save_history_as_gif method only supports two objective problems')
-            plt.plot(referenced_points[:, 0],
+            ax.plot(referenced_points[:, 0],
                      referenced_points[:, 1], color='black')
         elif isinstance(referenced_points, (list, tuple)):
             if not all(isinstance(solution, (list, tuple)) for solution in referenced_points) or \
@@ -87,6 +103,7 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
             f2_rp = [solution[0] for solution in referenced_points]
             plt.plot(f1_rp, f2_rp, color='black', linewidth=linewidth)
 
+    do_axis(ax)
     plt.xlabel(objective_name[0])
     plt.ylabel(objective_name[1])
     plt.title(title)

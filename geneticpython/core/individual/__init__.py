@@ -5,6 +5,6 @@
 """
 from __future__ import absolute_import
 
-from .solution import Solution, SimpleSolution
+from .solution import Solution
 from .individual import Individual
 from .chromosome import IntChromosome, FloatChromosome

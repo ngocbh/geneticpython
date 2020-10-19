@@ -10,4 +10,5 @@ from __future__ import absolute_import
 
 from .individual import *
 from .operators import *
-from .population import *
+from .population import Population
+from .pareto import Pareto
