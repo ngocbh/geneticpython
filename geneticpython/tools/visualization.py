@@ -60,7 +60,7 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
             pareto_dict[name], key=lambda solution: tuple(solution))
     fig, ax = plt.subplots()
     legends = []
-    marker = marker or ('+', 'o', '*', '^', '.', ',')
+    marker = marker or ('o', '+', '*', '^', '.', ',')
     iter_marker = itertools.cycle(marker)
     
     if fillstyle == 'flicker':
@@ -78,7 +78,7 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
         obj2 = [solution[1] for solution in pareto]
         m = next(iter_marker)
         fs = next(iter_fillstyle)
-        # ax.scatter(obj1, obj2, marker=m, s=s)
+        ax.scatter(obj1, obj2, marker=m, s=s)
         if plot_line:
             ax.plot(obj1, obj2, 
                      linewidth=linewidth,
