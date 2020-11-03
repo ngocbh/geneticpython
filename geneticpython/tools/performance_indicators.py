@@ -134,6 +134,7 @@ def hypervolume_2d(S: Union[Pareto, SimplePareto], r: SimpleSolution):
 
     HV = np.sum(S[:n+1, 0] * S[1:, 1] - S[:n+1, 1] * S[1:, 0]) / 2
 
+    # print (S, r, HV)
     return HV
 
 
