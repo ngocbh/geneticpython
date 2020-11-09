@@ -31,13 +31,16 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
                      save=False,
                      show=True,
                      referenced_points=None,
-                     plot_line=False,
+                     plot_line=True,
                      marker=None,
                      linestyle=None,
-                     s=None,
+                     markersize=None,
                      linewidth=None,
                      do_axis=lambda ax : None,
+                     do_plt=lambda ax : None,
                      fillstyle=None,
+                     dpi=None,
+                     frameon=None,
                      **kwargs):
     pareto_dict.update(kwargs)
     for name, pareto in pareto_dict.items():
@@ -58,7 +61,9 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
                     solution {solution} of pareto {name} has {len(solution)}")
         pareto_dict[name] = sorted(
             pareto_dict[name], key=lambda solution: tuple(solution))
+    do_plt(plt)
     fig, ax = plt.subplots()
+    do_axis(ax)
     legends = []
     marker = marker or ('o', '+', '*', '^', '.', ',')
     iter_marker = itertools.cycle(marker)
@@ -78,13 +83,15 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
         obj2 = [solution[1] for solution in pareto]
         m = next(iter_marker)
         fs = next(iter_fillstyle)
-        ax.scatter(obj1, obj2, marker=m, s=s)
         if plot_line:
             ax.plot(obj1, obj2, 
                      linewidth=linewidth,
                      linestyle=linestyle,
                      fillstyle=fs,
+                     markersize=markersize,
                      marker=m)
+        else:
+            ax.scatter(obj1, obj2, marker=m, s=markersize)
 
     if referenced_points is not None:
         if isinstance(referenced_points, np.ndarray):
@@ -93,7 +100,7 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
                     'referenced_points must have shape like (number_of_points)*(numer_of_objectives) \
                     and save_history_as_gif method only supports two objective problems')
             ax.plot(referenced_points[:, 0],
-                     referenced_points[:, 1], color='black')
+                     referenced_points[:, 1], color='black', linewidth=linewidth)
         elif isinstance(referenced_points, (list, tuple)):
             if not all(isinstance(solution, (list, tuple)) for solution in referenced_points) or \
                     not all(isinstance(value, (int, float)) for solution in referenced_points for value in solution):
@@ -103,13 +110,12 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
             f2_rp = [solution[0] for solution in referenced_points]
             plt.plot(f1_rp, f2_rp, color='black', linewidth=linewidth)
 
-    do_axis(ax)
     plt.xlabel(objective_name[0])
     plt.ylabel(objective_name[1])
     plt.title(title)
-    plt.legend(legends)
+    plt.legend(legends, frameon=frameon)
     if save:
-        plt.savefig(filepath)
+        plt.savefig(filepath, dpi=dpi)
 
     if show:
         plt.show()
@@ -123,7 +129,7 @@ def visualize_solutions(pareto, solutions,
                         objective_name: List[str] = ['obj1', 'obj2'],
                         show=True, save=False,
                         referenced_points=None,
-                        xlim=None, ylim=None):
+                        xlim=None, ylim=None, dpi=None):
     plt.figure()
     pareto.sort(key=lambda solution: tuple(solution))
     obj1 = [solution[0] for solution in pareto]
@@ -148,7 +154,7 @@ def visualize_solutions(pareto, solutions,
     plt.ylabel(objective_name[1])
     plt.title(title)
     if save:
-        plt.savefig(filepath)
+        plt.savefig(filepath, dpi=dpi)
 
     if show:
         plt.show()

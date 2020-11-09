@@ -226,7 +226,9 @@ def generational_distance(S: Union[Pareto, SimplePareto], P: Union[Pareto, Simpl
     n = len(S)
     GD = 0
     for s in S:
-        GD += min(np.linalg.norm(s - P, axis=1))**p
+        i = np.argmin(np.linalg.norm(s - P, axis=1))
+        # print(s, i, P[i])
+        GD += np.min(np.linalg.norm(s - P, axis=1))**p
     GD = np.power(GD, 1/p) / n
     return GD
 
@@ -242,7 +244,8 @@ def inverted_generational_distance(S: Union[Pareto, SimplePareto], P: Union[Pare
     n = len(P)
     IGD = 0
     for _p in P:
-        IGD += min(np.linalg.norm(S - _p, axis=1))**p
+        i = np.argmin(np.linalg.norm(S - _p, axis=1))
+        IGD += np.min(np.linalg.norm(S - _p, axis=1))**p
     IGD = np.power(IGD, 1/p) / n
     return IGD
 
