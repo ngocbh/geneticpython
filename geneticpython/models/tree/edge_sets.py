@@ -11,6 +11,7 @@ from geneticpython.core.individual import Individual, IntChromosome
 from geneticpython.models.tree.tree import Tree, KruskalTree, EdgeList, RootedTree
 from geneticpython.utils.validation import check_random_state
 from typing import Set, Tuple, List
+from copy import deepcopy
 
 import numpy as np
 
@@ -20,16 +21,24 @@ class EdgeSets(Individual):
     """
 
     def __init__(self, number_of_vertices, 
+                 chromosome : IntChromosome = None,
                  solution: Tree = None,
                  potential_edges: EdgeList = None,
                  init_method: str = None):
         self.number_of_vertices = number_of_vertices
-        chromosome = IntChromosome(
+        chromosome = chromosome or IntChromosome(
             (self.number_of_vertices-1) * 2, domains=[0, number_of_vertices - 1])
         super(EdgeSets, self).__init__(chromosome=chromosome)
         self.solution = solution or Tree(number_of_vertices, potential_edges=potential_edges, init_method=init_method)
         if init_method is not None:
             self.solution.set_initialization_method(init_method)
+
+    def clone(self):
+        number_of_vertices = self.number_of_vertices
+        solution = self.solution.clone()
+        chromosome = deepcopy(self.chromosome)
+
+        return EdgeSets(number_of_vertices, chromosome=chromosome, solution=solution)
 
     def decode(self) -> Tree:
         """decode.

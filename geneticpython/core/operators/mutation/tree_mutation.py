@@ -63,8 +63,10 @@ class TreeMutation(Mutation):
 
         # find unused edges in tree, used to choose new edge
         unused_edges = list()
+        tree_edges = set(tree.edges)
+
         for u, v in self.potential_edges: 
-            if (u, v) not in tree.edges and (v, u) not in tree.edges:
+            if (u, v) not in tree_edges and (v, u) not in tree_edges:
                 unused_edges.append((u, v))
 
         # choose new edge

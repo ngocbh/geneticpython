@@ -8,21 +8,33 @@ Description: this implementation follows this tutorial: https://cp-algorithms.co
 from __future__ import absolute_import
 
 from geneticpython.core.individual.chromosome import IntChromosome
+from geneticpython.core.individual import Individual
 from geneticpython.models.tree.tree import Tree
 from geneticpython.models.int_individual import IntIndividual
+from copy import deepcopy
 
-class PruferCode(IntIndividual):
+class PruferCode(Individual):
     """PruferCode.
         the implementation follows tutorial: https://cp-algorithms.com/graph/pruefer_code.html
     """
 
-    def __init__(self, number_of_vertices: int, solution: Tree = None):
+    def __init__(self, number_of_vertices: int, chromosome: IntChromosome = None, solution: Tree = None):
         self.number_of_vertices = number_of_vertices
-        self.solution = solution or Tree(number_of_vertices)
+        solution = solution or Tree(number_of_vertices)
+        chromosome = chromosome or IntChromosome(number_of_vertices-2, [0, number_of_vertices-1])
+
+        super(PruferCode, self).__init__(chromosome=chromosome, solution=solution)
+
         if self.number_of_vertices != self.solution.number_of_vertices:
             raise ValueError('number_of_vertices is conflict in argument and solution')
 
-        super(PruferCode, self).__init__(number_of_vertices-2, [0, number_of_vertices-1])
+
+    def clone(self):
+        number_of_vertices = self.number_of_vertices
+        solution = self.solution.clone()
+        chromosome = deepcopy(self.chromosome)
+
+        return PruferCode(number_of_vertices, chromosome=chromosome, solution=solution)
 
     def decode(self):
         """decode.
