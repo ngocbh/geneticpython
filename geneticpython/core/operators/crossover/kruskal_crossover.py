@@ -56,14 +56,17 @@ class KruskalCrossover(Crossover):
 
         intersection = set()
         remaining_edges = set()
-        for u, v in tree1.edges:
-            if (u, v) in tree2.edges or (v, u) in tree2.edges:
+        tree1_edges = set(tree1.edges)
+        tree2_edges = set(tree2.edges)
+
+        for u, v in tree1_edges:
+            if (u, v) in tree2_edges or (v, u) in tree2_edges:
                 intersection.add((u, v))
             elif (v, u) not in remaining_edges:
                 remaining_edges.add((u, v))
 
-        for u, v in tree2.edges:
-            if (u, v) not in tree1.edges and (v, u) not in tree1.edges \
+        for u, v in tree2_edges:
+            if (u, v) not in tree1_edges and (v, u) not in tree1_edges \
                     and (v, u) not in remaining_edges:
                 remaining_edges.add((u, v))
 
