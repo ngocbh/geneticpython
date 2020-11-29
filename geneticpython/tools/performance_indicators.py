@@ -128,13 +128,20 @@ def hypervolume_2d(S: Union[Pareto, SimplePareto], r: SimpleSolution):
     if n == 0:
         return 0
 
-    S = np.vstack([S, r])
     S = S[np.lexsort(np.rot90(S))]
-    S = np.vstack([S, S[0]])
-
-    HV = np.sum(S[:n+1, 0] * S[1:, 1] - S[:n+1, 1] * S[1:, 0]) / 2
+    S = S.astype(np.float64)
+    r = r.astype(np.float64)
+    r_temp = np.copy(r)
+    HV = 0
+    for i in range(n):
+        # print(i, S[i], r_temp)
+        # print(np.abs(r_temp[0] - S[i][0]) * np.abs(r_temp[1] - S[i][1]))
+        HV += np.abs(r_temp[0] - S[i][0]) * np.abs(r_temp[1] - S[i][1])
+        r_temp[1] = S[i][1]
+        # print(r_temp, S[i][1])
 
     # print (S, r, HV)
+    # print(HV)
     return HV
 
 
