@@ -57,6 +57,7 @@ class TournamentSelection(Selection):
         for _ in range(size):
             chosen = None
             competitors = random_state.choice(population, self.tournament_size)
+            random_state.shuffle(competitors)
             competitors = competitors.tolist()
             competitors.sort(key=cmp_to_key(comparator))
 

@@ -16,6 +16,7 @@ from geneticpython.core.operators import Replacement, RankReplacement, Tournamen
 from geneticpython.engines.geneticengine import GeneticEngine
 from geneticpython.callbacks import CallbackList, Callback, History
 from geneticpython.engines.multi_objective.multi_objective_engine import MultiObjectiveEngine, is_dominated
+from geneticpython.utils.validation import check_random_state
 
 import random
 import math
@@ -142,7 +143,8 @@ class NSGAIIEngine(MultiObjectiveEngine):
         return crowding_distance
 
     @staticmethod
-    def sort(population: List[Individual]) -> List[Individual]:
+    def sort(population: List[Individual], random_state=None) -> List[Individual]:
+        random_state = check_random_state(random_state)
         # non-dominated sorting
         pareto_fronts = NSGAIIEngine.nondominated_sort(population)
 
@@ -157,6 +159,8 @@ class NSGAIIEngine(MultiObjectiveEngine):
                 pareto_fronts[rank])
             for i in range(len(pareto_fronts[rank])):
                 pareto_fronts[rank][i].crowding_distance = crowding_distance_dict[pareto_fronts[rank][i]]
+
+            random_state.shuffle(pareto_fronts[rank])
 
             pareto_fronts[rank].sort(
                 key=lambda indv: indv.crowding_distance, reverse=True)
@@ -176,7 +180,7 @@ class NSGAIIEngine(MultiObjectiveEngine):
         return population
 
     def do_evaluation(self, population: List[Individual]) -> List[Individual]:
-        population = NSGAIIEngine.sort(population)
+        population = NSGAIIEngine.sort(population, self.random_state)
         return population
 
     def do_reproduction(self, mating_population: List[Individual]) -> List[Individual]:
