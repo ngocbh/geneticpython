@@ -1,7 +1,7 @@
-from geneticpython.tools.visualization import plot_single_objective_history
 from geneticpython.core.operators import RouletteWheelSelection, UniformCrossover, FlipBitMutation, RouletteWheelReplacement
 from geneticpython import Population, GAEngine
 from geneticpython.models import BinaryIndividual
+from geneticpython.tools.visualization import plot_single_objective_history
 from collections import namedtuple
 import sys
 import os

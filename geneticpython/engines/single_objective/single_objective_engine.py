@@ -57,7 +57,7 @@ class SingleObjectiveEngine(GeneticEngine):
 
     def _update_logs(self, logs):
         logs = logs or {}
-        logs.update(self.metrics)
+        logs.update(self.metrics or OrderedDict())
         return logs
 
     def compute_objectives(self, population: List[Individual]) -> List[Individual]:
