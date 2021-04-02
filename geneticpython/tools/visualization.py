@@ -115,6 +115,8 @@ def visualize_fronts(pareto_dict: Dict[str, Union[Pareto, SimplePareto]] = {},
     plt.ylabel(objective_name[1])
     plt.title(title)
     plt.legend(legends, frameon=frameon)
+    plt.tight_layout()
+
     if save:
         plt.savefig(filepath, dpi=dpi)
 
