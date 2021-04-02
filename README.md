@@ -80,9 +80,10 @@ plot_single_objective_history({'geneticpython': history})
 You can find more examples [here](https://github.com/ngocjr7/geneticpython/tree/master/examples)
 
 ## TODO
-- [] Create extensive documentation and docs and comments in source-code
-- [] Implement other algorithms: `PSO, DE, MOED/A, MOPSO, MODE,...`
-- [] Implement other operators: `PMX crossover, ...`
+
+* [ ] Create extensive documentation and docs and comments in source-code
+* [ ] Implement other algorithms: `PSO, DE, MOED/A, MOPSO, MODE,...`
+* [ ] Implement other operators: `PMX crossover, ...`
 
 ## Issues and Contribution
 This project is in development, if you find any issues, please create an issue [here](https://github.com/ngocjr7/geneticpython/issues).
