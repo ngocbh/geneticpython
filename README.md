@@ -79,16 +79,27 @@ plot_single_objective_history({'geneticpython': history})
 
 You can find more examples [here](https://github.com/ngocjr7/geneticpython/tree/master/examples)
 
+## Issues
+This project is in development, if you find any issues, please create an issue [here](https://github.com/ngocjr7/geneticpython/issues).
+
 ## TODO
 
 * [ ] Create extensive documentation and docs and comments in source-code
 * [ ] Implement other algorithms: `PSO, DE, MOED/A, MOPSO, MODE,...`
 * [ ] Implement other operators: `PMX crossover, ...`
+* [ ] Create unit tests.
 
-## Issues and Contribution
-This project is in development, if you find any issues, please create an issue [here](https://github.com/ngocjr7/geneticpython/issues).
+## Contributing
 
-If you are interested in contributing this project, feel free to create pull request [here](https://github.com/ngocjr7/geneticpython/pulls). We appreciate any contributions from you.
+The goal of this project is to be able to build a simple and novice-friendly library yet functional enough to experiment with research projects. It is spontaneous and non-profit and also flawed.
+
+We appreciate all contributions. If you are interested in contributing this project (including functional implementation or standard examples), please check [Contribution page](https://github.com/ngocjr7/geneticpython/blob/master/CONTRIBUTING.md).
+
+If you plan to contribute new features, utility functions, fix bugs, or extensions to the core, please first open an issue and discuss the feature with us. 
+
+## Contributors
+
+Ngoc Bui ([ngocjr7](https://github.com/ngocjr7)), Hung Tran ([tranhuyhung1998](https://github.com/tranhuyhung1998))
 
 ## Acknowledgements
 Special thanks to https://github.com/PytLab/gaft for getting me started a great API design.
@@ -97,3 +108,4 @@ This repository includes adaptions of the following repositories as baselines:
 
 * https://github.com/msu-coinlab/pymoo
 * https://github.com/tensorflow/tensorflow
+
