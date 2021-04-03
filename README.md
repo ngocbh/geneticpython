@@ -18,14 +18,14 @@ pip install geneticpython
 
 We can quickly design a genetic algorithm in the following steps:
 
-1. define a template individual with specific encoding
+1. define a individual template with specific encoding
 
 ```python
 from geneticpython.models import BinaryIndividual
 indv_temp = BinaryIndividual(length=100)
 ```
 
-2. define population based on this population can uniformly initialize a population or you can define your own by passing `init_population` argument function
+2. define population based on created individual template. This population can uniformly initialize a population or you can define your own by passing `init_population` argument function
 
 ```python
 from geneticpython import Population
