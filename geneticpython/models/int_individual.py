@@ -11,7 +11,8 @@ from geneticpython.core.individual.chromosome import IntChromosome
 class IntIndividual(Individual):
 
     def __init__(self, length, domains):
-        self.chromosome = IntChromosome(length=length, domains=domains)
+        chromosome = IntChromosome(length=length, domains=domains)
+        super(IntIndividual, self).__init__(chromosome)
 
 if __name__ == '__main__':
     pass

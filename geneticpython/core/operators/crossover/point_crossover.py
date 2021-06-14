@@ -52,7 +52,7 @@ class PointCrossover(Crossover):
 
         points = np.arange(length-1)
         points = points[self.point_filter(points)]
-        slt_points = list(random_state.choice(points, self.n_points))
+        slt_points = list(random_state.choice(points, self.n_points, replace=False))
         slt_points.append(length)
         slt_points.sort()
 

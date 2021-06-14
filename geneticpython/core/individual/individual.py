@@ -85,10 +85,12 @@ class Individual:
     @property
     def objectives(self):
         objectives = []
-        for _coefficient, _objective in zip(self._coefficients, self._objectives):
-            objectives.append(_coefficient * _objective)
-
-        return objectives
+        if self._objectives is not None:
+            for _coefficient, _objective in zip(self._coefficients, self._objectives):
+                objectives.append(_coefficient * _objective)
+            return objectives
+        else: 
+            return None
 
     def is_valid(self):
         return self.chromosome.is_valid() and (not self.solution or self.solution.is_valid())

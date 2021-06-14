@@ -35,7 +35,7 @@ class SwapMutation(Mutation):
         points = np.arange(length-1)
         if self.n_points * 2 > length:
             raise ValueError('SwapMutation: n_points * 2 > length')
-        slt_points = random_state.choice(points, self.n_points * 2)
+        slt_points = random_state.choice(points, self.n_points * 2, replace=False)
 
         for i in range(0, len(slt_points), 2):
             x, y = slt_points[i], slt_points[i+1]

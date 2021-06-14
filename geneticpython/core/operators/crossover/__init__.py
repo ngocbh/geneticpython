@@ -11,3 +11,4 @@ from .sbx_crossover import SBXCrossover
 from .kruskal_crossover import KruskalCrossover
 from .prim_crossover import PrimCrossover
 from .point_crossover import PointCrossover
+from .order_crossover import OrderCrossover
