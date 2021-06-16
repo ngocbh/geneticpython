@@ -101,6 +101,9 @@ def two_sets_coverage(A: Union[Pareto, SimplePareto], B: Union[Pareto, SimplePar
     """
     A, B = check_pareto(A, B)
 
+    if len(B) == 0:
+        return 1
+
     noadb = 0
     for x in B:
         if any(is_dominated(y, x) for y in A):
@@ -121,12 +124,14 @@ def hypervolume_2d(S: Union[Pareto, SimplePareto], r: SimpleSolution):
     """
     S = check_pareto(S)
     r = check_simple_solution(r)
-    if S.shape[1] != 2 or len(r) != 2:
-        raise ValueError(
-            'This implementation is only used for 2-dimensional space')
+
     n = len(S)
     if n == 0:
         return 0
+
+    if S.shape[1] != 2 or len(r) != 2:
+        raise ValueError(
+            'This implementation is only used for 2-dimensional space')
 
     S = S[np.lexsort(np.rot90(S))]
     S = S.astype(np.float64)
@@ -191,11 +196,13 @@ def delta(S: Union[Pareto, SimplePareto], P: Union[Pareto, SimplePareto]):
         P (Union[Pareto, SimplePareto]): P
     """
     S, P = check_pareto(S, P)
-    S = S[np.lexsort(np.rot90(S))]
-    P = P[np.lexsort(np.rot90(P))]
+
     n = len(S)
     if n < 2:
         return 1.0 
+
+    S = S[np.lexsort(np.rot90(S))]
+    P = P[np.lexsort(np.rot90(P))]
 
     d = np.zeros(n-1)
     for i in range(n-1):
