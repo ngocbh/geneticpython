@@ -99,12 +99,12 @@ If you plan to contribute new features, utility functions, fix bugs, or extensio
 
 ## Contributors
 
-Ngoc Bui ([ngocjr7](https://github.com/ngocjr7)), Hung Tran ([tranhuyhung1998](https://github.com/tranhuyhung1998))
+Ngoc Bui ([ngocjr7](https://github.com/ngocjr7))
 
 ## Acknowledgements
 Special thanks to https://github.com/PytLab/gaft for getting me started a great API design.
 
-This repository includes adaptions of the following repositories as baselines:
+This repository includes some parts of the following repos:
 
 * https://github.com/msu-coinlab/pymoo
 * https://github.com/tensorflow/tensorflow
