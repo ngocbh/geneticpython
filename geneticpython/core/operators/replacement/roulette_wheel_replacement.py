@@ -22,10 +22,10 @@ class RouletteWheelReplacement(Replacement):
         selection = RouletteWheelSelection()
         best_indv = min(population, key=lambda indv: indv._objective)
 
-        bad_pop = list()
-        for indv in population:
-            if not abs(indv._objective - best_indv._objective) < self.__EPS:
-                bad_pop.append(indv)
+        bad_pop = population.copy()
+        # for indv in population:
+        #     if not abs(indv._objective - best_indv._objective) < self.__EPS:
+        #         bad_pop.append(indv)
 
         new_population = [best_indv]
         new_population.extend(selection.select(
