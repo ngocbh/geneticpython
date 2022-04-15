@@ -39,7 +39,7 @@ class RouletteWheelSelection(Selection):
                 idx -= 1
 
             if idx == -len(selected):
-                idx = random_state.randint(0, len(selected)-1)
+                idx = random_state.randint(0, len(selected))
 
             selected_indvs.append(population[idx])
             selected[idx] = False
