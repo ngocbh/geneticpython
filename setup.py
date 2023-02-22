@@ -19,7 +19,7 @@ setup(name='geneticpython',
       long_description_content_type="text/markdown",
       author_email='ngocjr7@gmail.com',
       project_urls=PROJECT_URLS,
-      version='0.0.2', 
+      version='0.0.3',
       packages=find_packages(),
       install_requires=install_requires,
       python_requires='>=3.6')
